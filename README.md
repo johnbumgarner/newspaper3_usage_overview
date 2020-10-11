@@ -20,7 +20,7 @@ Some website queried with <i>Newspaper3k</i> will send back status response code
 
 One of the primary root causes of these errors is the lack of a browser's user agent string in the request. 
 
-Another potential issue when making requests with <i>Newspaper3k</i> is a <i>ReadTimeout<i> error.  These error are usually linked to not providing a connection timeout period in your request. The <i>Python requests</i> documentation makes a point that setting a connection timeout is considered best practice.
+Another potential issue when making requests with <i>Newspaper3k</i> is a <i>ReadTimeout</i> error.  These error are usually linked to not providing a connection timeout period in your request. The <i>Python requests</i> documentation makes a point that setting a connection timeout is considered best practice.
 </p>
 
 #### Configuration example
