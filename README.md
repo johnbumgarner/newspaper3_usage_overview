@@ -4,7 +4,8 @@
 This repository was developed to provide technical insights on how to properly utilized the <i>Python</i> library <i>Newspaper3k</i> to query a news source, such as the [Wall Street Journal]( https://www.wsj.com)
 </p>
 
-### Newspaper Configuration
+### Newspaper Configuration for Querying 
+
 <p align="justify">
 <i>Newspaper3k</i> uses the <i>Python requests</i> module to make a connection request to a news website. <i>Python requests</i> allows connections to have HTTP headers information and <i>Newspaper3k</i> includes this capability within its code base. These <i>Newspaper3k</i> configuration parameters include: sending a browser's user agent string as part of the request, establishing a connection timeout period (in seconds) and using proxies.  
            
@@ -56,6 +57,7 @@ from newspaper import Config
 from newspaper import Article
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
 config = Config()
 config.browser_user_agent = USER_AGENT
 config.request_timeout = 10
@@ -80,9 +82,16 @@ HEADERS = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
            
 config = Config()
 config.headers = HEADERS
+config.request_timeout = 10
 
 url = 'https://www.wsj.com'
 article = Article(url, config=config)
  <DO SOMETHING>
 ```
+
+### Newspaper Source Extraction 
+<p align="justify">
+One of the primary purposes of <i>Newspaper3k</i> is text extraction from a news website. Out-of-box <i>Newspaper3k</i> does a good job of extracting content, but it is not flawless.  Several the issues posted to either [Stack Overflow](https://stackoverflow.com/search?q=newspaper3k) or to the GitHub repository for [Newspaper ](https://github.com/codelucas/newspaper/issues)
+
+</p>
 
