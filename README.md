@@ -1,7 +1,10 @@
 
 ## Primary objective of this repository
 <p align="justify">
-This repository was developed to provide technical insights on how to properly utilized the <i>Python</i> library <i>Newspaper3k</i> to query a news source, such as the [Wall Street Journal](https://www.wsj.com)
+This repository was developed to provide technical insights on how to properly utilized the <i>Python</i> library <i>Newspaper3k</i> to query a news source, such as the <a href="https://www.wsj.com">Wall Street Journal.</a>
+           
+           
+          
 </p>
 
 ### Newspaper Configuration for Querying 
@@ -90,8 +93,8 @@ article = Article(url, config=config)
 ```
 
 ### Newspaper Source Extraction 
-<p align="justify">
-One of the primary purposes of <i>Newspaper3k</i> is text extraction from a news website. Out-of-box <i>Newspaper3k</i> does a good job of extracting content, but it is not flawless.  Several the issues posted to either [Stack Overflow](https://stackoverflow.com/search?q=newspaper3k) or to the GitHub repository for [Newspaper ](https://github.com/codelucas/newspaper/issues)
 
+<p align="justify">
+One of the primary purposes of <i>Newspaper3k</i> is text extraction from a news website. Out-of-box <i>Newspaper3k</i> does a good job of extracting content, but it is not flawless.  Several of these extraction issues are posted as questions to either <a href="https://stackoverflow.com/search?q=newspaper3k">Stack Overflow</a> or to the GitHub repository for <a href="https://github.com/codelucas/newspaper/issues">Newspaper.</a>  Many of the extraction questions are directly related to an end-user not reviewing the news source's HTML code prior to querying the website with <i>Newspaper3k</i>. Any developer that has used <a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/">BeautifulSoup</a>, <a href="https://scrapy.org/">Scrapy</a> or <a href="https://selenium-python.readthedocs.io/">Selenium</a> to scrape a website knows that you need to review the portal's structure to properly extract content. 
 </p>
 
