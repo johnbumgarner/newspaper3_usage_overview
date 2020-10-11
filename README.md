@@ -169,10 +169,12 @@ print(article_title)
 
 article_summary = {value for (key, value) in article_meta_data.items() if key == 'article.summary'}
 print(article_summary)
-{'Investors are entering third-quarter earnings season with brighter expectations for corporate profits, a bet they hope will propel the next leg of the stock market’s rally.'}
+{'Investors are entering third-quarter earnings season with brighter expectations for corporate profits, 
+a bet they hope will propel the next leg of the stock market’s rally.'}
 
 keywords = ''.join({value for (key, value) in article_meta_data.items() if key == 'news_keywords'})
 article_keywords = sorted(keywords.lower().split(','))
 print(article_keywords)
-['c&e exclusion filter', 'c&e industry news filter', 'codes_reviewed', 'commodity/financial market news', 'content types', 'corporate/industrial news', 'earnings', 'equity markets', 'factiva filters', 'financial performance']
+['c&e exclusion filter', 'c&e industry news filter', 'codes_reviewed', 'commodity/financial market news', 'content types', 
+'corporate/industrial news', 'earnings', 'equity markets', 'factiva filters', 'financial performance']
 ```
