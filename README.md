@@ -215,9 +215,11 @@ print(article_keywords)
 ```
 
 ### Fox News Extraction 
+
 <p align="justify">
 Extracting specific data elements from Fox News requires querying the meta tags. These data elements that can be obtain in are the title of the article, the published date of the article and a summary of the article.  Fox News does not use keywords, so extracting these is not possble.  Extracting the authors of the article is also problematic, because Fox News does not use a standard tag (e.g., by-line) for this information.  
 </p>
+
 
 ```python
 from newspaper import Config
@@ -250,5 +252,42 @@ and House Speaker Nancy Pelosi, but that Congress should "immediately vote on a 
 funds while working toward a bigger package.'}
 ```
 
+```python
+import json
+from newspaper import Config
+from newspaper import Article
+from newspaper.utils import BeautifulSoup
 
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+base_url = 'https://www.foxbusiness.com/economy/white-house-calls-for-interim-coronavirus-relief-as-negotiations-continue'
+article = Article(base_url, config=config)
+article.download()
+article.parse()
+
+soup = BeautifulSoup(article.html, 'html.parser')
+cnn_dictionary = json.loads("".join(soup.find("script", {"type":"application/ld+json"}).contents))
+
+date_published = [value for (key, value) in cnn_dictionary.items() if key == 'datePublished']
+print(date_published)
+['2020-10-11T12:51:53-04:00']
+
+article_author = [value['name'] for (key, value) in cnn_dictionary.items() if key == 'author']
+print(article_author)
+['Reuters']
+
+article_title = [value for (key, value) in cnn_dictionary.items() if key == 'headline']
+print(article_title)
+['White House pushes for limited coronavirus relief bill as broader effort meets resistance']
+
+article_summary = [value for (key, value) in cnn_dictionary.items() if key == 'description']
+print(article_summary)
+['In the letter to House and Senate members, Mnuchin and Meadows said the White House would continue to talk to Senate Democratic Leader Chuck Schumer 
+and House Speaker Nancy Pelosi, but that Congress should "immediately vote on a bill" that would enable the use of unused Paycheck Protection Program 
+funds while working toward a bigger package.']
+```
 
