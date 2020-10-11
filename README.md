@@ -1,19 +1,26 @@
 
+## Primary objective of this repository
+<p align="justify">
+This repository was developed to provide technical insights on how to properly utilized the <i>Python</i> library <i>Newspaper3k</i> to query a news source, such as the [Wall Street Journal]( https://www.wsj.com)
+</p>
 
-This repository was developed to provide technical insights on how to properly utilized the <i>Python</i> library <i>Newspaper3k </i> to query a news source, such as the [Wall Street Journal]( https://www.wsj.com)
+### Newspaper Configuration
+<p align="justify">
+           
+<i>Newspaper3k</i> uses the <i>Python requests</i> module to make a connection request to a news website. <i>Python requests</i> allows connections to have HTTP headers information and <i>Newspaper3k</i> includes this same capability
+</p>
 
-
-#### Newspaper Configuration
 
 ```python
 from newspaper import Configuration
 
 config = Configuration()
 config.browser_user_agent = string value
-config.request_timeout = int value 
 config.proxies = dictionary of proxies
+config.request_timeout = int value 
 ```
 
+#### Usage example
 
 ```python
 from newspaper import Configuration
@@ -28,8 +35,8 @@ PROXIES = {
 
 config = Configuration()
 config.browser_user_agent = USER_AGENT
-config.request_timeout = 10
 config.proxies = PROXIES
+config.request_timeout = 10
 
 ```
 
