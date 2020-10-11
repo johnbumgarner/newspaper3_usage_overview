@@ -98,3 +98,81 @@ article = Article(url, config=config)
 One of the primary purposes of <i>Newspaper3k</i> is text extraction from a news website. Out-of-box <i>Newspaper3k</i> does a good job of extracting content, but it is not flawless.  Several of these extraction issues are posted as questions to either <a href="https://stackoverflow.com/search?q=newspaper3k">Stack Overflow</a> or to the GitHub repository for <a href="https://github.com/codelucas/newspaper/issues">Newspaper.</a>  Many of the extraction questions are directly related to an end-user not reviewing the news source's HTML code prior to querying the website with <i>Newspaper3k</i>. Any developer that has used <a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/">BeautifulSoup</a>, <a href="https://scrapy.org/">Scrapy</a> or <a href="https://selenium-python.readthedocs.io/">Selenium</a> to scrape a website knows that you need to review the portal's structure to properly extract content. 
 </p>
 
+### Newspaper Wall Street Journal Extraction 
+
+<p align="justify">
+The example below is querying an article on the Wall Street Journal and extracting several data elements from the page's HTML code. <i>Newspaper3k</i> was able to 
+adequately extract the article's title and author of the article, but failed to extract the published data or the keywords related to this article. 
+</p>
+
+```python
+from newspaper import Config
+from newspaper import Article
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+url = 'https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1'
+article = Article(url, config=config)
+article.download()
+article.parse()
+
+print(article.title)
+Investors Are Betting Corporate Earnings Have Turned a Corner
+
+print(article.authors)
+['Karen Langley']
+
+print(article.publish_date)
+None
+
+print(article.keywords)
+[] returned an empty list
+```
+
+<p align="justify">
+The publish_date and keywords related to this Wall Street Journal article are located in mutiple meta tags and can be extracted by <i>Newspaper3k</i> using 
+<i>article.meta_data.</i>  Addtional article data elements, such as authors, title and article summary are located with the meta tags used by the Wall Street Journal.
+</p>
+
+```python
+from newspaper import Config
+from newspaper import Article
+
+HEADERS = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0',
+           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
+config = Config()
+
+config.headers = HEADERS
+config.request_timeout = 10
+
+url = 'https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1'
+article = Article(url, config=config)
+article.download()
+article.parse()
+article_meta_data = article.meta_data
+
+article_published_date = str({value for (key, value) in article_meta_data.items() if key == 'article.published'})
+print(article_published_date)
+{'2020-10-11T09:30:00.000Z'}
+
+article_author = sorted({value for (key, value) in article_meta_data.items()if key == 'author'})
+print(article_author)
+['Karen Langley']
+
+article_title = {value for (key, value) in article_meta_data.items() if key == 'article.headline'}
+print(article_title)
+{'Investors Are Betting Corporate Earnings Have Turned a Corner'}
+
+article_summary = {value for (key, value) in article_meta_data.items() if key == 'article.summary'}
+print(article_summary)
+{'Investors are entering third-quarter earnings season with brighter expectations for corporate profits, a bet they hope will propel the next leg of the stock market’s rally.'}
+
+keywords = ''.join({value for (key, value) in article_meta_data.items() if key == 'news_keywords'})
+article_keywords = sorted(keywords.lower().split(','))
+print(article_keywords)
+['c&e exclusion filter', 'c&e industry news filter', 'codes_reviewed', 'commodity/financial market news', 'content types', 'corporate/industrial news', 'earnings', 'equity markets', 'factiva filters', 'financial performance']
+```
