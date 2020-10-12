@@ -396,4 +396,41 @@ input code      full name
   zh              Chinese
   ```
 
+### China Daily Extraction in Chinese
+<p align="justify">
+The example below is querying the China Daily news site in the Chinese language. <i>Newspaper3k</i> uses the Chinese Words Segementation Utility <i>jieba</i> when extracting data elements. This <i>Python</i> module was continually building a prefix dict, which displayed build information. Currently the only mechanism to suppress this build information is with this setting <i>jieba.setLogLevel(logging.ERROR)</i>. 
+</p>
+
+``` python
+from newspaper import Config
+from newspaper import Article
+import jieba
+import logging
+jieba.setLogLevel(logging.ERROR)
+
+HEADERS = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0',
+           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
+config = Config()
+
+config.headers = HEADERS
+config.request_timeout = 10
+
+base_url = 'http://tech.chinadaily.com.cn/a/202009/30/WS5f7414f1a3101e7ce9727a44.html'
+article = Article(base_url, config=config, language='zh')
+article.download()
+article.parse()
+article_meta_data = article.meta_data
+
+print(article.title)
+中国发布高分多模卫星首批影像成果
+
+print(article.publish_date)
+2020-09-30 00:00:00
+
+article_keywords = {value for (key, value) in article_meta_data.items() if key == 'Keywords'}
+if article_keywords:
+    print(article_keywords)
+    {'多模,高分,影像,卫星,成果,发布,中国'}
+```
+
  
