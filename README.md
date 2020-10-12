@@ -1,5 +1,4 @@
 
-### Currently under development 
 ### Last Updated: 10-11-2020
 
 ## Primary objective of this repository
