@@ -475,6 +475,65 @@ print(article_summary)
 ['Tote bei Protesten zwischen Linken und Rechten, Terrorpläne im eigenen Land: Die Gewaltbereitschaft in den USA ist vor der Wahl hoch. Und der Präsident deeskaliert nicht.']
 ```
 
+
+## Saving Extracted Data
+
+
+### Python Pandas 
+<p align="justify">
+<a href="https://pandas.pydata.org/">Pandas</a> is a powerful <i>Python module</i> that uses a DataFrame object for data manipulation with integrated indexing. This module allows for the efficient reading and writing of data between in-memory data structures and different formats, including CSV, text files, Microsoft Excel and SQL databases.
+           
+The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article and the associated keywords assigned to this article.  All these data elements are being written to an in-memory data structure. It's worth noting that all these data elements were normalized into string variables, which made for easier storage in the <i>pandas DataFrame</i>.
+
+</p>
+
+```python
+import pandas as pd
+from newspaper import Config
+from newspaper import Article
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+base_url = 'https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1'
+article = Article(base_url, config=config)
+article.download()
+article.parse()
+article_meta_data = article.meta_data
+
+published_date = {value for (key, value) in article_meta_data.items() if key == 'article.published'}
+article_published_date = " ".join(str(x) for x in published_date)
+
+authors = sorted({value for (key, value) in article_meta_data.items()if key == 'author'})
+article_author = ', '.join(authors)
+
+title = {value for (key, value) in article_meta_data.items() if key == 'article.headline'}
+article_title = " ".join(str(x) for x in title)
+
+summary = {value for (key, value) in article_meta_data.items() if key == 'article.summary'}
+article_summary = " ".join(str(x) for x in summary)
+
+keywords = ''.join({value for (key, value) in article_meta_data.items() if key == 'news_keywords'})
+keywords_list = sorted(keywords.lower().split(','))
+article_keywords = ', '.join(keywords_list)
+
+# pandas DataFrame used to store the extraction results
+df_wsj_extraction = pd.DataFrame(columns=['date_published', 'article authors', 'article title',
+                                          'article summary', 'article keywords'])
+
+df_wsj_extraction = df_wsj_extraction.append({'date_published': article_published_date,
+                                              'article authors': article_author,
+                                              'article title': article_title,
+                                              'article summary': article_summary,
+                                              'article keywords': article_keywords}, ignore_index=True)
+
+print(df_wsj_extraction.to_string(index=False))
+
+```
+
 ## To-Do
 - text extraction 
 - saving articles
