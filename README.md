@@ -476,4 +476,9 @@ article_summary = [value for (key, value) in zeit_dictionary.items() if key == '
 print(article_summary)
 ['Tote bei Protesten zwischen Linken und Rechten, Terrorpläne im eigenen Land: Die Gewaltbereitschaft in den USA ist vor der Wahl hoch. Und der Präsident deeskaliert nicht.']
 ```
- 
+
+## To-Do
+- text extraction 
+- saving articles
+- saving data to DataFrame
+- NLP
