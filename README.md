@@ -1,4 +1,6 @@
 
+### Last Updated: 10-11-2020
+
 ## Primary objective of this repository
 <p align="justify">
 This repository was developed to provide technical insights on how to properly utilized the <i>Python</i> library <i>Newspaper3k</i> to query news sourcees, such as the <a href="https://www.wsj.com">Wall Street Journal</a>, <a href="https://www.bbc.com">the BBC</a> and <a href="https://www.cnn.com">CNN</a>.
@@ -430,4 +432,44 @@ if article_keywords:
     {'多模,高分,影像,卫星,成果,发布,中国'}
 ```
 
+### Die Zeit Extraction in German
+<p align="justify">
+The example below is querying the Die Zeit news site in the german language. <i>Newspaper3k</i> has some difficulties querying and extracting content from this news site.  To bypass these issues, this example uses the <i>Python requests</i> module to query Die Zeit and passes this content to <i>Newspaper3k</i> and <i>BeautifulSoup</i>.
+           
+</p>
+
+``` python
+import json
+import requests
+from newspaper import Article
+from newspaper.utils import BeautifulSoup
+
+HEADERS = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0',
+           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
+           
+base_url = 'https://www.zeit.de/politik/ausland/2020-10/us-wahl-donald-trump-gewalt-milizen-protest'
+raw_html = requests.get(base_url, headers=HEADERS, timeout=10)
+article = Article('', language='de')
+article.download(input_html=raw_html.content)
+article.parse()
+
+soup = BeautifulSoup(article.html, 'html.parser')
+zeit_dictionary = json.loads("".join(soup.findAll("script", {"type": "application/ld+json"})[3].contents))
+
+date_published = [value for (key, value) in zeit_dictionary.items() if key == 'datePublished']
+print(date_published)
+['2020-10-12T04:53:14+02:00']
+
+article_author = [value['name'] for (key, value) in zeit_dictionary.items() if key == 'author']
+print(article_author)
+['Rieke Havertz']
+
+article_title = [value for (key, value) in zeit_dictionary.items() if key == 'headline']
+print(article_title)
+['US-Wahl: Gewalt nicht ausgeschlossen']
+
+article_summary = [value for (key, value) in zeit_dictionary.items() if key == 'description']
+print(article_summary)
+['Tote bei Protesten zwischen Linken und Rechten, Terrorpläne im eigenen Land: Die Gewaltbereitschaft in den USA ist vor der Wahl hoch. Und der Präsident deeskaliert nicht.']
+```
  
