@@ -138,7 +138,7 @@ print(article.meta_keywords)
 
 <p align="justify">
 The example below is querying an article on the Wall Street Journal and extracting several data elements from the page's HTML code. <i>Newspaper3k</i> was able to 
-adequately extract the article's title and author of the article, but failed to extract the published data or the keywords related to this article. 
+adequately extract the article's title and author of the article, but failed to extract the published date or the keywords related to this article. 
 </p>
 
 ```python
@@ -170,8 +170,8 @@ print(article.keywords)
 ```
 
 <p align="justify">
-The publish_date and keywords related to this Wall Street Journal article are located in mutiple meta tags and can be extracted by <i>Newspaper3k</i> using 
-<i>article.meta_data.</i>  Addtional article data elements, such as authors, title and article summary are also located within the meta tags used by the Wall Street Journal.
+The published date and keywords related to this Wall Street Journal article are located in mutiple meta tags and can be extracted by <i>Newspaper3k</i> using 
+<i>article.meta_data.</i>  Addtional article data elements, such as authors, title and article summary are also located within the meta tags section used by the Wall Street Journal.
 </p>
 
 ```python
