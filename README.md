@@ -98,8 +98,9 @@ One of the primary purposes of <i>Newspaper3k</i> is text extraction from a news
 </p>
 
 ### CNN Extraction 
+
 <p align="justify">
-The example below is querying an article on the CNN website using <i>Newspaper3k</i>.  The article data elements; title, authors and date published are adequately  extracted using <i>Newspaper3k</i>.  The keywords for this article were not initial discovered by <i>Newspaper3k</i>, but modifying the parameter <i>article.keywords</i> to <i>meta_keywords</i> did yield the keywords related to this article. 
+The example below is querying an article on the CNN website using <i>Newspaper3k</i>.  The article data elements; title, authors and date published are adequately  extracted using <i>Newspaper3k</i>.  The keywords for this article were not initial discovered by <i>Newspaper3k</i>, but modifying the parameter <i>article.keywords</i> to <i>meta_keywords</i> does yield the keywords related to this article. 
 </p>
 
 ```python
@@ -216,7 +217,7 @@ print(article_keywords)
 ### Fox News Extraction 
 
 <p align="justify">
-Extracting specific data elements from Fox News requires querying the meta tags. These data elements that can be obtain in are the title of the article, the published date of the article and a summary of the article.  Fox News does not use keywords, so extracting these is not possble.  Extracting the authors of the article is also problematic, because Fox News does not use a standard tag (e.g., by-line) for this information.  
+Extracting specific data elements from Fox News requires querying the meta tags section of the HTML code. The data elements that can be extracted include the title of the article, the published date of the article and a summary of the article.  Fox News does not use keywords, so extracting these is not possble.  Extracting the authors of the article is also problematic, because Fox News does not use a standard tag (e.g., by-line) for this information.  
 </p>
 
 
@@ -295,9 +296,9 @@ funds while working toward a bigger package.']
 ```
 
 ### BBC News Extraction 
+
 <p align="justify">
-BBC News stores data elements in multiple locations within its source code.  Some of these data elements can be extracted using <i>article.meta_data</i> and others 
-can be accessed through the <i>Python</i> modules <i>BeautifulSoup</i> and <i>JSON</i>. As previously started <i>BeautifulSoup</i> is a dependency of <i>Newspaper3k</i> and can be accessed through <i>newspaper.utils.</i>    
+BBC News stores their data elements in multiple locations within its source code.  Some of these data elements can be extracted using <i>article.meta_data</i> and others can be accessed through the <i>Python</i> modules <i>BeautifulSoup</i> and <i>JSON</i>. As previously started <i>BeautifulSoup</i> is a dependency of <i>Newspaper3k</i> and can be accessed through <i>newspaper.utils.</i>    
 </p>
 
 ```python
@@ -345,7 +346,7 @@ print(article_title)
 
 ### Newspaper language support
 <p align="justify">
-As of October 2020 <i>Newspaper3k</i> supports 37 different languages.      
+<i>Newspaper3k</i> currently supports 37 different languages, as of October 2020.  
 </p>
 
 ``` python
@@ -396,6 +397,7 @@ input code      full name
   ```
 
 ### China Daily Extraction in Chinese
+
 <p align="justify">
 The example below is querying the China Daily news site in the Chinese language. <i>Newspaper3k</i> uses the Chinese Words Segementation Utility <i>jieba</i> when extracting data elements. This <i>Python</i> module was continually building a prefix dict, which displayed build information. Currently the only mechanism to suppress this build information is with this setting <i>jieba.setLogLevel(logging.ERROR)</i>. 
 </p>
@@ -407,11 +409,10 @@ import jieba
 import logging
 jieba.setLogLevel(logging.ERROR)
 
-HEADERS = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0',
-           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
-config = Config()
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
 
-config.headers = HEADERS
+config = Config()
+config.browser_user_agent = USER_AGENT
 config.request_timeout = 10
 
 base_url = 'http://tech.chinadaily.com.cn/a/202009/30/WS5f7414f1a3101e7ce9727a44.html'
@@ -433,9 +434,9 @@ if article_keywords:
 ```
 
 ### Die Zeit Extraction in German
+
 <p align="justify">
-The example below is querying the Die Zeit news site in the german language. <i>Newspaper3k</i> has some difficulties querying and extracting content from this news site.  To bypass these issues, this example uses the <i>Python requests</i> module to query Die Zeit and passes this content to <i>Newspaper3k</i> and <i>BeautifulSoup</i>.
-           
+The example below is querying the Die Zeit news site in the German language. <i>Newspaper3k</i> has some difficulties querying and extracting content from this news site.  To bypass these issues, this example uses the <i>Python requests</i> module to query Die Zeit and passes the HTML to <i>Newspaper3k</i> and <i>BeautifulSoup</i> for processing.       
 </p>
 
 ``` python
@@ -444,11 +445,14 @@ import requests
 from newspaper import Article
 from newspaper.utils import BeautifulSoup
 
-HEADERS = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0',
-           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
-           
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
 base_url = 'https://www.zeit.de/politik/ausland/2020-10/us-wahl-donald-trump-gewalt-milizen-protest'
-raw_html = requests.get(base_url, headers=HEADERS, timeout=10)
+raw_html = requests.get(base_url, config=config, timeout=10)
 article = Article('', language='de')
 article.download(input_html=raw_html.content)
 article.parse()
