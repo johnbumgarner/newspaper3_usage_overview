@@ -483,8 +483,7 @@ print(article_summary)
 <p align="justify">
 <a href="https://pandas.pydata.org/">Pandas</a> is a powerful <i>Python module</i> that uses a DataFrame object for data manipulation with integrated indexing. This module allows for the efficient reading and writing of data between in-memory data structures and different formats, including CSV, text files, Microsoft Excel and SQL databases.
            
-The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article and the associated keywords assigned to this article.  All these data elements are being written to an in-memory data structure. It's worth noting that all these data elements were normalized into string variables, which made for easier storage in the <i>pandas DataFrame</i>.
-
+The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article and the associated keywords assigned to this article.  All these data elements are written to an in-memory data structure. It's worth noting that all these data elements were normalized into string variables, which made for easier storage in the <i>pandas DataFrame</i>.
 </p>
 
 ```python
@@ -533,6 +532,58 @@ df_wsj_extraction = df_wsj_extraction.append({'date_published': article_publishe
 print(df_wsj_extraction.to_string(index=False))
 
 ```
+
+### CSV files 
+<p align="justify">
+Writing data to a comma-separated values (CSV) file is a very common practice in <i>Python</i>. The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article and the associated keywords assigned to this article.  All these data elements are written to an external CSV file. All the data elements were normalized into string variables, which made for 
+easier storage in the CSV file. 
+</p>
+
+```python
+import csv
+from newspaper import Config
+from newspaper import Article
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+base_url = 'https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1'
+article = Article(base_url, config=config)
+article.download()
+article.parse()
+article_meta_data = article.meta_data
+
+published_date = {value for (key, value) in article_meta_data.items() if key == 'article.published'}
+article_published_date = " ".join(str(x) for x in published_date)
+
+authors = sorted({value for (key, value) in article_meta_data.items()if key == 'author'})
+article_author = ', '.join(authors)
+
+title = {value for (key, value) in article_meta_data.items() if key == 'article.headline'}
+article_title = " ".join(str(x) for x in title)
+
+summary = {value for (key, value) in article_meta_data.items() if key == 'article.summary'}
+article_summary = " ".join(str(x) for x in summary)
+
+keywords = ''.join({value for (key, value) in article_meta_data.items() if key == 'news_keywords'})
+keywords_list = sorted(keywords.lower().split(','))
+article_keywords = ', '.join(keywords_list)
+
+with open('wsj_extraction_results.csv', 'a', newline='') as csvfile:
+    headers = ['date published', 'article authors', 'article title', 'article summary', 'article keywords']
+    writer = csv.DictWriter(csvfile, delimiter=',', lineterminator='\n', fieldnames=headers)
+    writer.writeheader()
+
+    writer.writerow({'date published': article_published_date,
+                     'article authors': article_author,
+                     'article title': article_title,
+                     'article summary': article_summary,
+                     'article keywords': article_keywords})
+```
+
 
 ## To-Do
 - text extraction 
