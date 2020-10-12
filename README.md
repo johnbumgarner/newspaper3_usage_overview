@@ -11,7 +11,7 @@ This repository was developed to provide technical insights on how to properly u
 <p align="justify">
 <i>Newspaper3k</i> uses the <i>Python requests</i> module to make a connection request to a news website. <i>Python requests</i> allows connections to have HTTP headers information and <i>Newspaper3k</i> includes this capability within its code base. These <i>Newspaper3k</i> configuration parameters include: sending a browser's user agent string as part of the request, establishing a connection timeout period (in seconds) and using proxies.  
            
-Some website queried with <i>Newspaper3k</i> will send back status response code indicating a problem with the conenction.  These status response code include:
+Some websites queried with <i>Newspaper3k</i> will send back status response code indicating that there was a problem with the connection.  These status response codes include:
 
 - HTTP 400 Bad Request error 
 - HTTP 403 Forbidden client error
@@ -19,7 +19,7 @@ Some website queried with <i>Newspaper3k</i> will send back status response code
 
 One of the primary root causes of these errors is the lack of a browser's user agent string in the request. 
 
-Another potential issue when making requests with <i>Newspaper3k</i> is a <i>ReadTimeout</i> error.  These error are usually linked to not providing a connection timeout period in your request. The <i>Python requests</i> documentation makes a point that setting a connection timeout is considered best practice.
+Another potential issue when making requests with <i>Newspaper3k</i> is a <i>ReadTimeout</i> error.  This error is usually linked to not providing a connection timeout period in the request. The <i>Python requests</i> documentation makes a point that setting a connection timeout is considered best practice.
 </p>
 
 #### Configuration example
