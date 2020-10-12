@@ -295,3 +295,52 @@ and House Speaker Nancy Pelosi, but that Congress should "immediately vote on a 
 funds while working toward a bigger package.']
 ```
 
+### BBC News Extraction 
+<p align="justify">
+BBC News stores data elements in multiple locations within it source code.  Some of these data elements can be extracted using <i>article.meta_data</i> and others 
+can be accessed through the <i>Python</i> modules <i>BeautifulSoup</i> and <i>JSON</i>. As previously started <i>BeautifulSoup</i> is a dependency of <i>Newspaper3k</i> and can be accessed through <i>newspaper.utils.</i>    
+</p>
+
+```python
+import json
+from newspaper import Config
+from newspaper import Article
+from newspaper.utils import BeautifulSoup
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+base_url = 'https://www.bbc.com/news/health-54500673'
+article = Article(base_url, config=config)
+article.download()
+article.parse()
+
+print(article.title)
+['Covid virus ‘survives for 28 days’ in lab conditions']
+
+article_meta_data = article.meta_data
+
+article_summary = {value for (key, value) in article_meta_data.items() if key == 'description'}
+print(article_summary)
+{'Researchers find SARS-Cov-2 survives for longer than thought - but only under certain conditions.'}
+
+soup = BeautifulSoup(article.html, 'html.parser')
+bbc_dictionary = json.loads("".join(soup.find("script", {"type":"application/ld+json"}).contents))
+
+date_published = [value for (key, value) in bbc_dictionary.items() if key == 'datePublished']
+print(date_published)
+['2020-10-11T20:11:33.000Z']
+
+article_author = [value['name'] for (key, value) in bbc_dictionary.items() if key == 'author']
+print(article_author)
+['BBC News']
+
+# another method to extract the title
+article_title = [value for (key, value) in bbc_dictionary.items() if key == 'headline']
+print(article_title)
+['Covid virus ‘survives for 28 days’ in lab conditions']
+```
+
