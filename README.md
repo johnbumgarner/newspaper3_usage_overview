@@ -2,6 +2,7 @@
 ### Last Updated: 10-11-2020
 
 ## Primary objective of this repository
+
 <p align="justify">
 This repository was developed to provide technical insights on how to properly utilized the <i>Python</i> library <a href="https://github.com/codelucas/newspaper">Newspaper3k</a> to query news sources, such as the <a href="https://www.wsj.com">Wall Street Journal</a>, <a href="https://www.bbc.com">the BBC</a> and <a href="https://www.cnn.com">CNN</a>.
 </p>
