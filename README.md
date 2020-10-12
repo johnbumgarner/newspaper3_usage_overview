@@ -446,14 +446,11 @@ import requests
 from newspaper import Article
 from newspaper.utils import BeautifulSoup
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
-
-config = Config()
-config.browser_user_agent = USER_AGENT
-config.request_timeout = 10
+HEADERS = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0',
+           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
 
 base_url = 'https://www.zeit.de/politik/ausland/2020-10/us-wahl-donald-trump-gewalt-milizen-protest'
-raw_html = requests.get(base_url, config=config, timeout=10)
+raw_html = requests.get(base_url, headers=HEADERS, timeout=10)
 article = Article('', language='de')
 article.download(input_html=raw_html.content)
 article.parse()
