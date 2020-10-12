@@ -6,7 +6,7 @@
 This repository was developed to provide technical insights on how to properly utilized the <i>Python</i> library <a href="https://github.com/codelucas/newspaper">Newspaper3k</a> to query news sources, such as the <a href="https://www.wsj.com">Wall Street Journal</a>, <a href="https://www.bbc.com">the BBC</a> and <a href="https://www.cnn.com">CNN</a>.
 </p>
 
-### Newspaper Configuration for Querying 
+## Newspaper Configuration for Querying 
 
 <p align="justify">
 <i>Newspaper3k</i> uses the <i>Python requests</i> module to make a connection request to a news website. <i>Python requests</i> allows connections to have HTTP headers information and <i>Newspaper3k</i> includes this capability within its code base. These <i>Newspaper3k</i> configuration parameters include: sending a browser's user agent string as part of the request, establishing a connection timeout period (in seconds) and using proxies.  
@@ -91,7 +91,7 @@ article = Article(base_url, config=config)
  <DO SOMETHING>
 ```
 
-### Newspaper Source Extraction 
+## Newspaper Source Extraction 
 
 <p align="justify">
 One of the primary purposes of <i>Newspaper3k</i> is text extraction from a news website. Out-of-box <i>Newspaper3k</i> does a good job of extracting content, but it is not flawless.  Several of these extraction issues are posted as questions to either <a href="https://stackoverflow.com/search?q=newspaper3k">Stack Overflow</a> or to the GitHub repository for <a href="https://github.com/codelucas/newspaper/issues">Newspaper.</a>  Many of the extraction questions are directly related to an end-user not reviewing the news source's HTML code prior to querying the website with <i>Newspaper3k</i>. Any developer that has used <a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/">BeautifulSoup</a>, <a href="https://scrapy.org/">Scrapy</a> or <a href="https://selenium-python.readthedocs.io/">Selenium</a> to scrape a website knows that you need to review the portal's structure to properly extract content. 
@@ -344,7 +344,7 @@ print(article_title)
 ['Covid virus ‘survives for 28 days’ in lab conditions']
 ```
 
-### Newspaper language support
+## Newspaper language support
 <p align="justify">
 <i>Newspaper3k</i> currently supports 37 different languages, as of October 2020.  
 </p>
