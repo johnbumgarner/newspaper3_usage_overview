@@ -588,5 +588,4 @@ with open('wsj_extraction_results.csv', 'a', newline='') as csvfile:
 ## To-Do
 - text extraction 
 - saving articles
-- saving data to DataFrame
 - NLP
