@@ -297,7 +297,7 @@ funds while working toward a bigger package.']
 
 ### BBC News Extraction 
 <p align="justify">
-BBC News stores data elements in multiple locations within it source code.  Some of these data elements can be extracted using <i>article.meta_data</i> and others 
+BBC News stores data elements in multiple locations within its source code.  Some of these data elements can be extracted using <i>article.meta_data</i> and others 
 can be accessed through the <i>Python</i> modules <i>BeautifulSoup</i> and <i>JSON</i>. As previously started <i>BeautifulSoup</i> is a dependency of <i>Newspaper3k</i> and can be accessed through <i>newspaper.utils.</i>    
 </p>
 
