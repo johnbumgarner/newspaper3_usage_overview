@@ -638,6 +638,79 @@ with open('wsj_extraction_results.csv', 'a', newline='') as csvfile:
                      'article keywords': article_keywords})
 ```
 
+### JSON files 
+<p align="justify">
+Writing data to a JSON file is also very common practice in <i>Python</i>. The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article, the associated keywords assigned to this article and the URL of the article.  All these data elements are written to an external JSON file. All the data elements were normalized into string variables, which made for easier storage in the JSON file. 
+</p>
+
+```python
+import json
+from newspaper import Config
+from newspaper import Article
+
+news_extraction_results = {}
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+base_url = 'https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1'
+article = Article(base_url, config=config)
+article.download()
+article.parse()
+article_meta_data = article.meta_data
+
+published_date = {value for (key, value) in article_meta_data.items() if key == 'article.published'}
+article_published_date = " ".join(str(x) for x in published_date)
+
+authors = sorted({value for (key, value) in article_meta_data.items()if key == 'author'})
+article_author = ', '.join(authors)
+
+title = {value for (key, value) in article_meta_data.items() if key == 'article.headline'}
+article_title = " ".join(str(x) for x in title)
+
+summary = {value for (key, value) in article_meta_data.items() if key == 'article.summary'}
+article_summary = " ".join(str(x) for x in summary)
+
+keywords = ''.join({value for (key, value) in article_meta_data.items() if key == 'news_keywords'})
+keywords_list = sorted(keywords.lower().split(','))
+article_keywords = ', '.join(keywords_list)
+
+news_extraction_results['wsj'] = []
+news_extraction_results['wsj'].append({
+    'published_date': article_published_date,
+    'authors': article_author,
+    'summary': article_summary,
+    'keywords': article_keywords,
+    'source url': article.url})
+
+
+# write JSON file
+with open('wsj.json', 'w') as json_file:
+    json.dump(news_extraction_results, json_file)
+    
+# read JSON file
+with open('wsj.json') as json_file:
+    data = json.load(json_file)
+    print(json.dumps(data, indent=4))
+    {
+      "wsj": [
+       {
+         "published_date": "2020-10-11T09:30:00.000Z",
+         "authors": "Karen Langley",
+         "summary": "Investors are entering third-quarter earnings season with brighter expectations for corporate profits, a bet they hope 
+         will propel the next leg of the stock market\u2019s rally.",
+         "keywords": "c&e exclusion filter, c&e industry news filter, codes_reviewed, commodity/financial market news, 
+         content types, corporate/industrial news, earnings, equity markets, factiva filters, financial performance",
+         "source url": "https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1"
+       }
+     ]
+   }
+
+```
+
 ## Newspaper NewsPool Threading 
 <p align="justify">
 <a href="https://github.com/codelucas/newspaper">Newspaper3k</a> has a threading model named <i>news_pool</i>. This function can be used to extract data elements from mutiple sources.  The example below is querying articles on <a href="https://www.cnn.com">CNN</a> and the <a href="https://www.wsj.com">Wall Street Journal</a>.  
