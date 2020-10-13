@@ -532,7 +532,6 @@ print(article_summary)
 
 ## Saving Extracted Data
 
-
 ### Python Pandas 
 <p align="justify">
 <a href="https://pandas.pydata.org/">Pandas</a> is a powerful <i>Python module</i> that uses a DataFrame object for data manipulation with integrated indexing. This module allows for the efficient reading and writing of data between in-memory data structures and different formats, including CSV, text files, Microsoft Excel and SQL databases.
@@ -638,8 +637,52 @@ with open('wsj_extraction_results.csv', 'a', newline='') as csvfile:
                      'article keywords': article_keywords})
 ```
 
+## Newspaper NewsPool Threading 
+<p align="justify">
+<a href="https://github.com/codelucas/newspaper">Newspaper3k</a> has a threading model named <i>news_pool</i>. This function can be used to extract data elements from mutiple sources.  The example below is querying articles on <a href="https://www.cnn.com">CNN</a> and the <a href="https://www.wsj.com">Wall Street Journal</a>.  
+           
+Some caveats about using <i>news_pool</i>:
+
+1. Time intensive process - it can take minutes to build the sources, before data elements can be extracted.
+
+2. Additional Erroneous content - <i>newspaper.build</i> is designed to extract all the URLs on a news source, so some of the items parsed needed to be filtered.
+
+3. Redundant content - duplicate content is possible without adding additional data filtering.
+
+4. Different data structures - querying mutiple sources could present problems, especially if the news sources use different data structures, such as summaries being in meta-tags on one site and in script tag on the other site. 
+                          
+</p>
+
+```python
+import newspaper
+from newspaper import Config
+from newspaper import news_pool
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+wsj_news = newspaper.build('https://www.wsj.com/', config=config, memoize_articles=False, language='en')
+cnn_news = newspaper.build('https://www.cnn.com/', config=config, memoize_articles=False, language='en')
+news_sources = [wsj_news, cnn_news]
+
+# the parameters number_threads and thread_timeout_seconds are adjustable
+news_pool.config.number_threads = 4
+news_pool.config.thread_timeout_seconds = 1
+news_pool.set(news_sources)
+news_pool.join()
+
+article_urls = set()
+for source in news_sources:
+    for article_extract in source.articles:
+        if article_extract.url not in article_urls:
+            article_urls.add(article_extract.url)
+            print(article_extract.title)
+```
+
 
 ## To-Do
 - text extraction 
-- saving articles
 - NLP
