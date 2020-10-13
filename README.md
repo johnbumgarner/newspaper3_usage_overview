@@ -345,6 +345,60 @@ print(article_title)
 ['Covid virus ‘survives for 28 days’ in lab conditions']
 ```
 
+### Extraction from offline HTML files
+
+<p align="justify">
+<a href="https://github.com/codelucas/newspaper">Newspaper3k</a> can be used to post-process HTML files that have stored offline. The example below downloads the HTML for a news article from <a href="https://www.cnn.com/2020/10/12/health/johnson-coronavirus-vaccine-pause-bn/index.html">CNN</a>.  After the article is downloaded the file is read into <a href="https://github.com/codelucas/newspaper">Newspaper3k</a> and the data elements with the article are extracted.
+</p>
+
+```python
+from newspaper import Config
+from newspaper import Article
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+base_url = 'https://www.cnn.com/2020/10/12/health/johnson-coronavirus-vaccine-pause-bn/index.html'
+article = Article(url)
+article.download()
+article.parse()
+with open('cnn.html', 'w') as fileout:
+    fileout.write(article.html)
+
+
+# Read the HTML file created above
+with open("cnn.html", 'r') as f:
+    # note the empty URL string
+    article = Article('', language='en')
+    article.download(input_html=f.read())
+    article.parse()
+    
+    print(article.title)
+    Johnson & Johnson pauses Covid-19 vaccine trial after 'unexplained illness'
+    
+    article_meta_data = article.meta_data
+    
+    article_published_date = {value for (key, value) in article_meta_data.items() if key == 'pubdate'}
+    print(article_published_date)
+    {'2020-10-13T01:31:25Z'}
+
+    article_author = {value for (key, value) in article_meta_data.items() if key == 'author'}
+    print(article_author)
+    {'Maggie Fox, CNN'}
+
+    article_summary = {value for (key, value) in article_meta_data.items() if key == 'description'}
+    print(article_summary)
+    {'Johnson&Johnson said its Janssen arm had paused its coronavirus vaccine trial  after an "unexplained illness" in one 
+    of the volunteers testing its experimental Covid-19 shot.'}
+
+    article_keywords = {value for (key, value) in article_meta_data.items() if key == 'keywords'}
+    print(article_keywords)
+    {"health, Johnson & Johnson pauses Covid-19 vaccine trial after 'unexplained illness' - CNN"}
+```
+
 ## Newspaper language support
 <p align="justify">
 <i>Newspaper3k</i> currently supports 37 different languages, as of October 2020.  
