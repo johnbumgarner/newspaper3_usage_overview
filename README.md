@@ -1,6 +1,6 @@
 <b>Newspaper version: 0.2.8</b> 
 
-<b>Last Updated: 10-12-2020</b> 
+<b>Last Updated: 10-13-2020</b> 
 
 ## Primary objective of this repository
 
