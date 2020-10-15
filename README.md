@@ -713,6 +713,7 @@ print(df_wsj_extraction.to_string(index=False))
 ```
 
 # Newspaper NewsPool Threading 
+
 <p align="justify">
 <a href="https://github.com/codelucas/newspaper">Newspaper3k</a> has a threading model named <i>news_pool</i>. This function can be used to extract data elements from mutiple sources.  The example below is querying articles on <a href="https://www.cnn.com">CNN</a> and the <a href="https://www.wsj.com">Wall Street Journal</a>.  
            
@@ -725,7 +726,7 @@ Some caveats about using <i>news_pool</i>:
 3. Redundant content - duplicate content is possible without adding additional data filtering.
 
 4. Different data structures - querying mutiple sources could present problems, especially if the news sources use different data structures, such as summaries being in meta-tags on one site and in script tag on the other site. 
-                          
+
 </p>
 
 ```python
@@ -757,6 +758,34 @@ for source in news_sources:
             print(article_extract.title)
 ```
 
+<p align="justify">
+Threading is also possible in <a href="https://github.com/codelucas/newspaper">Newspaper3k</a> by calling various parameters when using the Source architecture to query a news source. This method is less time intensive than the <i>news_pool</i> threading model.   
+<p>
+
+```python
+from newspaper import Config
+from newspaper import Source
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+wsj_news = Source(url='https://www.wsj.com/', config=config, memoize_articles=False, language='en',
+                  number_threads=20, thread_timeout_seconds=2)
+
+cnn_news = Source(url='https://www.cnn.com', config=config, memoize_articles=False, language='en',
+                  number_threads=20, thread_timeout_seconds=2)
+
+news_sites = [cnn_news, wsj_news]
+for site in news_sites:
+    site.build()
+    for article_extract in site.articles:
+        article_extract.download()
+        article_extract.parse()
+        print(article_extract.title)
+```
 
 # To-Do
 - text extraction 
