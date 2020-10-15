@@ -99,6 +99,55 @@ article = Article(base_url, config=config)
 One of the primary purposes of <i>Newspaper3k</i> is text extraction from a news website. Out-of-box <i>Newspaper3k</i> does a good job of extracting content, but it is not flawless.  Several of these extraction issues are posted as questions to either <a href="https://stackoverflow.com/search?q=newspaper3k">Stack Overflow</a> or to the GitHub repository for <a href="https://github.com/codelucas/newspaper/issues">Newspaper.</a>  Many of the extraction questions are directly related to an end-user not reviewing the news source's HTML code prior to querying the website with <i>Newspaper3k</i>. Any developer that has used <a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/">BeautifulSoup</a>, <a href="https://scrapy.org/">Scrapy</a> or <a href="https://selenium-python.readthedocs.io/">Selenium</a> to scrape a website knows that you need to review the portal's structure to properly extract content. 
 </p>
 
+## BBC News Extraction 
+
+<p align="justify">
+BBC News stores their data elements in multiple locations within its source code.  Some of these data elements can be extracted using <i>article.meta_data</i> and others can be accessed through the <i>Python</i> modules <i>BeautifulSoup</i> and <i>JSON</i>. As previously started <i>BeautifulSoup</i> is a dependency of <i>Newspaper3k</i> and can be accessed through <i>newspaper.utils.</i>    
+</p>
+
+```python
+import json
+from newspaper import Config
+from newspaper import Article
+from newspaper.utils import BeautifulSoup
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+base_url = 'https://www.bbc.com/news/health-54500673'
+article = Article(base_url, config=config)
+article.download()
+article.parse()
+
+print(article.title)
+['Covid virus ‘survives for 28 days’ in lab conditions']
+
+article_meta_data = article.meta_data
+
+article_summary = {value for (key, value) in article_meta_data.items() if key == 'description'}
+print(article_summary)
+{'Researchers find SARS-Cov-2 survives for longer than thought - but only under certain conditions.'}
+
+soup = BeautifulSoup(article.html, 'html.parser')
+bbc_dictionary = json.loads("".join(soup.find("script", {"type":"application/ld+json"}).contents))
+
+date_published = [value for (key, value) in bbc_dictionary.items() if key == 'datePublished']
+print(date_published)
+['2020-10-11T20:11:33.000Z']
+
+article_author = [value['name'] for (key, value) in bbc_dictionary.items() if key == 'author']
+print(article_author)
+['BBC News']
+
+# another method to extract the title
+article_title = [value for (key, value) in bbc_dictionary.items() if key == 'headline']
+print(article_title)
+['Covid virus ‘survives for 28 days’ in lab conditions']
+```
+
 ## CNN Extraction 
 
 <p align="justify">
@@ -134,86 +183,6 @@ print(article.keywords)
 
 print(article.meta_keywords)
 ['business', 'Edinburgh Woollen Mill: 24', '000 jobs at risk as company appoints administrators - CNN']
-```
-
-## Wall Street Journal Extraction 
-
-<p align="justify">
-The example below is querying an article on the Wall Street Journal and extracting several data elements from the page's HTML code. <i>Newspaper3k</i> was able to 
-adequately extract the article's title and author of the article, but failed to extract the published date or the keywords related to this article. 
-</p>
-
-```python
-from newspaper import Config
-from newspaper import Article
-
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
-
-config = Config()
-config.browser_user_agent = USER_AGENT
-config.request_timeout = 10
-
-base_url = 'https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1'
-article = Article(base_url, config=config)
-article.download()
-article.parse()
-
-print(article.title)
-Investors Are Betting Corporate Earnings Have Turned a Corner
-
-print(article.authors)
-['Karen Langley']
-
-print(article.publish_date)
-None
-
-print(article.keywords)
-[] returned an empty list
-```
-
-<p align="justify">
-The published date and keywords related to this Wall Street Journal article are located in mutiple meta tags and can be extracted by <i>Newspaper3k</i> using 
-<i>article.meta_data.</i>  Addtional article data elements, such as authors, title and article summary are also located within the meta tags section used by the Wall Street Journal.
-</p>
-
-```python
-from newspaper import Config
-from newspaper import Article
-
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
-
-config = Config()
-config.browser_user_agent = USER_AGENT
-config.request_timeout = 10
-
-base_url = 'https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1'
-article = Article(base_url, config=config)
-article.download()
-article.parse()
-article_meta_data = article.meta_data
-
-article_published_date = str({value for (key, value) in article_meta_data.items() if key == 'article.published'})
-print(article_published_date)
-{'2020-10-11T09:30:00.000Z'}
-
-article_author = sorted({value for (key, value) in article_meta_data.items()if key == 'author'})
-print(article_author)
-['Karen Langley']
-
-article_title = {value for (key, value) in article_meta_data.items() if key == 'article.headline'}
-print(article_title)
-{'Investors Are Betting Corporate Earnings Have Turned a Corner'}
-
-article_summary = {value for (key, value) in article_meta_data.items() if key == 'article.summary'}
-print(article_summary)
-{'Investors are entering third-quarter earnings season with brighter expectations for corporate profits, 
-a bet they hope will propel the next leg of the stock market’s rally.'}
-
-keywords = ''.join({value for (key, value) in article_meta_data.items() if key == 'news_keywords'})
-article_keywords = sorted(keywords.lower().split(','))
-print(article_keywords)
-['c&e exclusion filter', 'c&e industry news filter', 'codes_reviewed', 'commodity/financial market news', 'content types', 
-'corporate/industrial news', 'earnings', 'equity markets', 'factiva filters', 'financial performance']
 ```
 
 ## Fox News Extraction 
@@ -297,17 +266,16 @@ and House Speaker Nancy Pelosi, but that Congress should "immediately vote on a 
 funds while working toward a bigger package.']
 ```
 
-## BBC News Extraction 
+## Wall Street Journal Extraction 
 
 <p align="justify">
-BBC News stores their data elements in multiple locations within its source code.  Some of these data elements can be extracted using <i>article.meta_data</i> and others can be accessed through the <i>Python</i> modules <i>BeautifulSoup</i> and <i>JSON</i>. As previously started <i>BeautifulSoup</i> is a dependency of <i>Newspaper3k</i> and can be accessed through <i>newspaper.utils.</i>    
+The example below is querying an article on the Wall Street Journal and extracting several data elements from the page's HTML code. <i>Newspaper3k</i> was able to 
+adequately extract the article's title and author of the article, but failed to extract the published date or the keywords related to this article. 
 </p>
 
 ```python
-import json
 from newspaper import Config
 from newspaper import Article
-from newspaper.utils import BeautifulSoup
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
 
@@ -315,35 +283,67 @@ config = Config()
 config.browser_user_agent = USER_AGENT
 config.request_timeout = 10
 
-base_url = 'https://www.bbc.com/news/health-54500673'
+base_url = 'https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1'
 article = Article(base_url, config=config)
 article.download()
 article.parse()
 
 print(article.title)
-['Covid virus ‘survives for 28 days’ in lab conditions']
+Investors Are Betting Corporate Earnings Have Turned a Corner
 
+print(article.authors)
+['Karen Langley']
+
+print(article.publish_date)
+None
+
+print(article.keywords)
+[] returned an empty list
+```
+
+<p align="justify">
+The published date and keywords related to this Wall Street Journal article are located in mutiple meta tags and can be extracted by <i>Newspaper3k</i> using 
+<i>article.meta_data.</i>  Addtional article data elements, such as authors, title and article summary are also located within the meta tags section used by the Wall Street Journal.
+</p>
+
+```python
+from newspaper import Config
+from newspaper import Article
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+base_url = 'https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1'
+article = Article(base_url, config=config)
+article.download()
+article.parse()
 article_meta_data = article.meta_data
 
-article_summary = {value for (key, value) in article_meta_data.items() if key == 'description'}
-print(article_summary)
-{'Researchers find SARS-Cov-2 survives for longer than thought - but only under certain conditions.'}
+article_published_date = str({value for (key, value) in article_meta_data.items() if key == 'article.published'})
+print(article_published_date)
+{'2020-10-11T09:30:00.000Z'}
 
-soup = BeautifulSoup(article.html, 'html.parser')
-bbc_dictionary = json.loads("".join(soup.find("script", {"type":"application/ld+json"}).contents))
-
-date_published = [value for (key, value) in bbc_dictionary.items() if key == 'datePublished']
-print(date_published)
-['2020-10-11T20:11:33.000Z']
-
-article_author = [value['name'] for (key, value) in bbc_dictionary.items() if key == 'author']
+article_author = sorted({value for (key, value) in article_meta_data.items()if key == 'author'})
 print(article_author)
-['BBC News']
+['Karen Langley']
 
-# another method to extract the title
-article_title = [value for (key, value) in bbc_dictionary.items() if key == 'headline']
+article_title = {value for (key, value) in article_meta_data.items() if key == 'article.headline'}
 print(article_title)
-['Covid virus ‘survives for 28 days’ in lab conditions']
+{'Investors Are Betting Corporate Earnings Have Turned a Corner'}
+
+article_summary = {value for (key, value) in article_meta_data.items() if key == 'article.summary'}
+print(article_summary)
+{'Investors are entering third-quarter earnings season with brighter expectations for corporate profits, 
+a bet they hope will propel the next leg of the stock market’s rally.'}
+
+keywords = ''.join({value for (key, value) in article_meta_data.items() if key == 'news_keywords'})
+article_keywords = sorted(keywords.lower().split(','))
+print(article_keywords)
+['c&e exclusion filter', 'c&e industry news filter', 'codes_reviewed', 'commodity/financial market news', 'content types', 
+'corporate/industrial news', 'earnings', 'equity markets', 'factiva filters', 'financial performance']
 ```
 
 ## Extraction from offline HTML files
@@ -532,60 +532,6 @@ print(article_summary)
 
 # Saving Extracted Data
 
-## Python Pandas 
-<p align="justify">
-<a href="https://pandas.pydata.org/">Pandas</a> is a powerful <i>Python module</i> that uses a DataFrame object for data manipulation with integrated indexing. This module allows for the efficient reading and writing of data between in-memory data structures and different formats, including CSV, text files, Microsoft Excel and SQL databases.
-           
-The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article and the associated keywords assigned to this article.  All these data elements are written to an in-memory data structure. It's worth noting that all these data elements were normalized into string variables, which made for easier storage in the <i>pandas DataFrame</i>.
-</p>
-
-```python
-import pandas as pd
-from newspaper import Config
-from newspaper import Article
-
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
-
-config = Config()
-config.browser_user_agent = USER_AGENT
-config.request_timeout = 10
-
-base_url = 'https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1'
-article = Article(base_url, config=config)
-article.download()
-article.parse()
-article_meta_data = article.meta_data
-
-published_date = {value for (key, value) in article_meta_data.items() if key == 'article.published'}
-article_published_date = " ".join(str(x) for x in published_date)
-
-authors = sorted({value for (key, value) in article_meta_data.items()if key == 'author'})
-article_author = ', '.join(authors)
-
-title = {value for (key, value) in article_meta_data.items() if key == 'article.headline'}
-article_title = " ".join(str(x) for x in title)
-
-summary = {value for (key, value) in article_meta_data.items() if key == 'article.summary'}
-article_summary = " ".join(str(x) for x in summary)
-
-keywords = ''.join({value for (key, value) in article_meta_data.items() if key == 'news_keywords'})
-keywords_list = sorted(keywords.lower().split(','))
-article_keywords = ', '.join(keywords_list)
-
-# pandas DataFrame used to store the extraction results
-df_wsj_extraction = pd.DataFrame(columns=['date_published', 'article authors', 'article title',
-                                          'article summary', 'article keywords'])
-
-df_wsj_extraction = df_wsj_extraction.append({'date_published': article_published_date,
-                                              'article authors': article_author,
-                                              'article title': article_title,
-                                              'article summary': article_summary,
-                                              'article keywords': article_keywords}, ignore_index=True)
-
-print(df_wsj_extraction.to_string(index=False))
-
-```
-
 ## CSV files 
 <p align="justify">
 Writing data to a comma-separated values (CSV) file is a very common practice in <i>Python</i>. The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article and the associated keywords assigned to this article.  All these data elements are written to an external CSV file. All the data elements were normalized into string variables, which made for 
@@ -636,6 +582,8 @@ with open('wsj_extraction_results.csv', 'a', newline='') as csvfile:
                      'article summary': article_summary,
                      'article keywords': article_keywords})
 ```
+
+
 
 ## JSON files 
 <p align="justify">
@@ -707,6 +655,60 @@ with open('wsj.json') as json_file:
        }
      ]
    }
+
+```
+
+## Python Pandas 
+<p align="justify">
+<a href="https://pandas.pydata.org/">Pandas</a> is a powerful <i>Python module</i> that uses a DataFrame object for data manipulation with integrated indexing. This module allows for the efficient reading and writing of data between in-memory data structures and different formats, including CSV, text files, Microsoft Excel and SQL databases.
+           
+The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article and the associated keywords assigned to this article.  All these data elements are written to an in-memory data structure. It's worth noting that all these data elements were normalized into string variables, which made for easier storage in the <i>pandas DataFrame</i>.
+</p>
+
+```python
+import pandas as pd
+from newspaper import Config
+from newspaper import Article
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+base_url = 'https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1'
+article = Article(base_url, config=config)
+article.download()
+article.parse()
+article_meta_data = article.meta_data
+
+published_date = {value for (key, value) in article_meta_data.items() if key == 'article.published'}
+article_published_date = " ".join(str(x) for x in published_date)
+
+authors = sorted({value for (key, value) in article_meta_data.items()if key == 'author'})
+article_author = ', '.join(authors)
+
+title = {value for (key, value) in article_meta_data.items() if key == 'article.headline'}
+article_title = " ".join(str(x) for x in title)
+
+summary = {value for (key, value) in article_meta_data.items() if key == 'article.summary'}
+article_summary = " ".join(str(x) for x in summary)
+
+keywords = ''.join({value for (key, value) in article_meta_data.items() if key == 'news_keywords'})
+keywords_list = sorted(keywords.lower().split(','))
+article_keywords = ', '.join(keywords_list)
+
+# pandas DataFrame used to store the extraction results
+df_wsj_extraction = pd.DataFrame(columns=['date_published', 'article authors', 'article title',
+                                          'article summary', 'article keywords'])
+
+df_wsj_extraction = df_wsj_extraction.append({'date_published': article_published_date,
+                                              'article authors': article_author,
+                                              'article title': article_title,
+                                              'article summary': article_summary,
+                                              'article keywords': article_keywords}, ignore_index=True)
+
+print(df_wsj_extraction.to_string(index=False))
 
 ```
 
