@@ -2,13 +2,13 @@
 
 <b>Last Updated: 10-13-2020</b> 
 
-## Primary objective of this repository
+# Primary objective of this repository
 
 <p align="justify">
 This repository was developed to provide technical insights on how to properly utilized the <i>Python</i> library <a href="https://github.com/codelucas/newspaper">Newspaper3k</a> to query news sources, such as the <a href="https://www.wsj.com">Wall Street Journal</a>, <a href="https://www.bbc.com">the BBC</a> and <a href="https://www.cnn.com">CNN</a>.
 </p>
 
-## Newspaper Configuration for Querying 
+# Newspaper Configuration for Querying 
 
 <p align="justify">
 <i>Newspaper3k</i> uses the <i>Python requests</i> module to make a connection request to a news website. <i>Python requests</i> allows connections to have HTTP headers information and <i>Newspaper3k</i> includes this capability within its code base. These <i>Newspaper3k</i> configuration parameters include: sending a browser's user agent string as part of the request, establishing a connection timeout period (in seconds) and using proxies.  
@@ -24,7 +24,7 @@ One of the primary root causes of these errors is the lack of a browser's user a
 Another potential issue when making requests with <i>Newspaper3k</i> is a <i>ReadTimeout</i> error.  This error is usually linked to not providing a connection timeout period in the request. The <i>Python requests</i> documentation makes a point that setting a connection timeout is considered best practice.
 </p>
 
-#### Configuration example
+## Configuration example
 
 ```python
 from newspaper import Config
@@ -35,7 +35,7 @@ config.proxies = dictionary of proxies
 config.request_timeout = int value 
 ```
 
-#### Sample usage example
+## Sample usage example
 
 ```python
 from newspaper import Config
@@ -54,7 +54,7 @@ config.proxies = PROXIES
 config.request_timeout = 10
 ```
 
-#### Real world usage example
+## Real world usage example
 
 ```python
 from newspaper import Config
@@ -75,7 +75,7 @@ article = Article(base_url, config=config)
 <i>Newspaper3k</i> also supports the use of HTTP headers via Config(). The headers are passed as a dictionary.     
 </p>
 
-#### Real world basic header usage example
+## Real world basic header usage example
 
 ```python
 from newspaper import Config
@@ -93,13 +93,13 @@ article = Article(base_url, config=config)
  <DO SOMETHING>
 ```
 
-## Newspaper Source Extraction 
+# Newspaper Source Extraction 
 
 <p align="justify">
 One of the primary purposes of <i>Newspaper3k</i> is text extraction from a news website. Out-of-box <i>Newspaper3k</i> does a good job of extracting content, but it is not flawless.  Several of these extraction issues are posted as questions to either <a href="https://stackoverflow.com/search?q=newspaper3k">Stack Overflow</a> or to the GitHub repository for <a href="https://github.com/codelucas/newspaper/issues">Newspaper.</a>  Many of the extraction questions are directly related to an end-user not reviewing the news source's HTML code prior to querying the website with <i>Newspaper3k</i>. Any developer that has used <a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/">BeautifulSoup</a>, <a href="https://scrapy.org/">Scrapy</a> or <a href="https://selenium-python.readthedocs.io/">Selenium</a> to scrape a website knows that you need to review the portal's structure to properly extract content. 
 </p>
 
-### CNN Extraction 
+## CNN Extraction 
 
 <p align="justify">
 The example below is querying an article on the CNN website using <i>Newspaper3k</i>.  The article data elements; title, authors and date published are adequately  extracted using <i>Newspaper3k</i>.  The keywords for this article were not initial discovered by <i>Newspaper3k</i>, but modifying the parameter <i>article.keywords</i> to <i>meta_keywords</i> does yield the keywords related to this article. 
@@ -136,7 +136,7 @@ print(article.meta_keywords)
 ['business', 'Edinburgh Woollen Mill: 24', '000 jobs at risk as company appoints administrators - CNN']
 ```
 
-### Wall Street Journal Extraction 
+## Wall Street Journal Extraction 
 
 <p align="justify">
 The example below is querying an article on the Wall Street Journal and extracting several data elements from the page's HTML code. <i>Newspaper3k</i> was able to 
@@ -216,7 +216,7 @@ print(article_keywords)
 'corporate/industrial news', 'earnings', 'equity markets', 'factiva filters', 'financial performance']
 ```
 
-### Fox News Extraction 
+## Fox News Extraction 
 
 <p align="justify">
 Extracting specific data elements from Fox News requires querying the meta tags section of the HTML code. The data elements that can be extracted include the title of the article, the published date of the article and a summary of the article.  Fox News does not use keywords, so extracting these is not possble.  Extracting the authors of the article is also problematic, because Fox News does not use a standard tag (e.g., by-line) for this information.  
@@ -297,7 +297,7 @@ and House Speaker Nancy Pelosi, but that Congress should "immediately vote on a 
 funds while working toward a bigger package.']
 ```
 
-### BBC News Extraction 
+## BBC News Extraction 
 
 <p align="justify">
 BBC News stores their data elements in multiple locations within its source code.  Some of these data elements can be extracted using <i>article.meta_data</i> and others can be accessed through the <i>Python</i> modules <i>BeautifulSoup</i> and <i>JSON</i>. As previously started <i>BeautifulSoup</i> is a dependency of <i>Newspaper3k</i> and can be accessed through <i>newspaper.utils.</i>    
@@ -346,7 +346,7 @@ print(article_title)
 ['Covid virus ‘survives for 28 days’ in lab conditions']
 ```
 
-### Extraction from offline HTML files
+## Extraction from offline HTML files
 
 <p align="justify">
 <a href="https://github.com/codelucas/newspaper">Newspaper3k</a> can be used to post-process HTML files that have stored offline. The example below downloads the HTML for a news article from <a href="https://www.cnn.com/2020/10/12/health/johnson-coronavirus-vaccine-pause-bn/index.html">CNN</a>.  After the article is downloaded the file is read into <a href="https://github.com/codelucas/newspaper">Newspaper3k</a> and the data elements with the article are extracted.
@@ -400,7 +400,7 @@ with open("cnn.html", 'r') as f:
     {"health, Johnson & Johnson pauses Covid-19 vaccine trial after 'unexplained illness' - CNN"}
 ```
 
-## Newspaper language support
+# Newspaper language support
 <p align="justify">
 <i>Newspaper3k</i> currently supports 37 different languages, as of October 2020.  
 </p>
@@ -452,7 +452,7 @@ input code      full name
   zh              Chinese
   ```
 
-### China Daily Extraction in Chinese
+## China Daily Extraction in Chinese
 
 <p align="justify">
 The example below is querying the China Daily news site in the Chinese language. <i>Newspaper3k</i> uses the Chinese Words Segementation Utility <i>jieba</i> when extracting data elements. This <i>Python</i> module was continually building a prefix dict, which displayed build information. Currently the only mechanism to suppress this build information is with this setting <i>jieba.setLogLevel(logging.ERROR)</i>. 
@@ -489,7 +489,7 @@ if article_keywords:
     {'多模,高分,影像,卫星,成果,发布,中国'}
 ```
 
-### Die Zeit Extraction in German
+## Die Zeit Extraction in German
 
 <p align="justify">
 The example below is querying the Die Zeit news site in the German language. <i>Newspaper3k</i> has some difficulties querying and extracting content from this news site.  To bypass these issues, this example uses the <i>Python requests</i> module to query Die Zeit and passes the HTML to <i>Newspaper3k</i> and <i>BeautifulSoup</i> for processing.       
@@ -530,10 +530,9 @@ print(article_summary)
 ['Tote bei Protesten zwischen Linken und Rechten, Terrorpläne im eigenen Land: Die Gewaltbereitschaft in den USA ist vor der Wahl hoch. Und der Präsident deeskaliert nicht.']
 ```
 
+# Saving Extracted Data
 
-## Saving Extracted Data
-
-### Python Pandas 
+## Python Pandas 
 <p align="justify">
 <a href="https://pandas.pydata.org/">Pandas</a> is a powerful <i>Python module</i> that uses a DataFrame object for data manipulation with integrated indexing. This module allows for the efficient reading and writing of data between in-memory data structures and different formats, including CSV, text files, Microsoft Excel and SQL databases.
            
@@ -587,7 +586,7 @@ print(df_wsj_extraction.to_string(index=False))
 
 ```
 
-### CSV files 
+## CSV files 
 <p align="justify">
 Writing data to a comma-separated values (CSV) file is a very common practice in <i>Python</i>. The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article and the associated keywords assigned to this article.  All these data elements are written to an external CSV file. All the data elements were normalized into string variables, which made for 
 easier storage in the CSV file. 
@@ -638,7 +637,7 @@ with open('wsj_extraction_results.csv', 'a', newline='') as csvfile:
                      'article keywords': article_keywords})
 ```
 
-### JSON files 
+## JSON files 
 <p align="justify">
 Writing data to a JSON file is also very common practice in <i>Python</i>. The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article, the associated keywords assigned to this article and the URL of the article.  All these data elements are written to an external JSON file. All the data elements were normalized into string variables, which made for easier storage in the JSON file. 
 </p>
@@ -711,7 +710,7 @@ with open('wsj.json') as json_file:
 
 ```
 
-## Newspaper NewsPool Threading 
+# Newspaper NewsPool Threading 
 <p align="justify">
 <a href="https://github.com/codelucas/newspaper">Newspaper3k</a> has a threading model named <i>news_pool</i>. This function can be used to extract data elements from mutiple sources.  The example below is querying articles on <a href="https://www.cnn.com">CNN</a> and the <a href="https://www.wsj.com">Wall Street Journal</a>.  
            
@@ -757,6 +756,6 @@ for source in news_sources:
 ```
 
 
-## To-Do
+# To-Do
 - text extraction 
 - NLP
