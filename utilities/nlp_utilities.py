@@ -42,6 +42,11 @@ from string import punctuation
 # These characters will be removed from the text
 exclude_punctuation = set(punctuation)
 
+# NLTK has these stop words languages available
+# 'arabic', 'azerbaijani', 'danish', 'dutch', 'english', 'finnish', 'french', 'german', 'greek', 
+# 'hungarian', 'indonesian', 'italian', 'kazakh', 'nepali', 'norwegian', 'portuguese', 'romanian', 
+# 'russian', 'slovene', 'spanish', 'swedish', 'tajik', 'turkish']
+#
 # English stop words to remove from text.
 # A stop word is a commonly used word, such
 # as “the”, “a”, “an”, “in”
