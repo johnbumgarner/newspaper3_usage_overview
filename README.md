@@ -1,6 +1,6 @@
 <b>Newspaper version: 0.2.8</b> 
 
-<b>Last Updated: 10-13-2020</b> 
+<b>Last Updated: 10-30-2020</b> 
 
 # Primary objective of this repository
 
@@ -787,6 +787,152 @@ for site in news_sites:
         print(article_extract.title)
 ```
 
-# To-Do
-- text extraction 
-- NLP
+#  Text Extraction and Natural Language Processing
+<p align="justify">
+<a href="https://github.com/codelucas/newspaper">Newspaper3k</a> can extract the text of articles, but the embedded extraction methodology used by Newspaper has numerous problems. For instance every news source has its own unique coding structure and article tag hierarchy, thus Newspaper has difficulty navigating and parsing some sites. In some circumstances Newspaper will either overlook entire sections of an article or unknowingly extract text that does not belong to the article being parsed. Newspaper will also occasionally extract some image tag text for photos linked to associated with an article. I would highly recommended reviewing the textual information extracted by Newspaper prior to performing any Natural Language Processing(NLP) tasks.
+           
+Concerning <a href="https://github.com/codelucas/newspaper">Newspaper3k</a> Natural Language Processing capabilities.  The embedded NLP capabilities in my opinion should not be used until the module's owner greatly improves them.
+
+This repository contains a <a href="https://github.com/johnbumgarner/newspaper3_usage_overview/blob/main/utilities/nlp_utilities.py">script</a> that can be used to perform various Natural Language Processing tasks on extracted textual information. Feel free to make suggestions to improve this script. 
+<p>
+
+## Basic Text Extraction 
+
+```python
+from newspaper import Config
+from newspaper import Article
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+url = 'https://www.newsweek.com/facebook-super-spreader-election-misinformation-1543306'
+article = Article(url, config=config)
+article.download()
+article.parse()
+# the replace is used to remove newlines
+article_text = article.text.replace('\n', '')
+print(article_text)
+Less than a week ahead of the U.S. presidential election, misinformation relating to voting and 
+election security is flourishing on Facebook, despite the platform's pledge to curb such content, 
+a NewsGuard investigation has found. NewsGuard has identified 40 Facebook pages that are 
+"super-spreaders" of election-related misinformation, meaning that they have shared false content 
+about voting or the electoral process to their audiences of at least 100,000 followers. Only three 
+of the 53 posts we identified on these pages—which together reach approximately 22.9 million 
+followers—were flagged by Facebook as false. Four of the pages have managers based outside the 
+U.S.—in Mexico,Vietnam, Australia, and Israel—despite the pages' focus on American politics. 
+The myths identified by NewsGuard include false claims of mail-in ballots getting thrown away, 
+narratives that dead people's cast ballots count as votes, and false claims about poll watchers. 
+The claims about poll watchers cut both ways, with players on both the right and the left pushing 
+their own, self-serving myths, NewsGuard found.NewsGuard's analysis also found that election-related 
+myths often seize on routine and solvable voting errors as examples of malpractice or deception, 
+sowing distrust in the electoral process. Others seem based on either an unintentional or willful 
+misunderstanding of rules and practices.The false stories NewsGuard identified sometimes included 
+multiple election myths, while other articles did not fit neatly with one particular election myth. 
+Nevertheless, all the articles NewsGuard identified advanced inaccurate information about the voting 
+process. For example, one popular Facebook post recently claimed that Pennsylvania had rejected 
+372,000 ballots, when in fact, Pennsylvania officials had actually rejected 372,000 ballot applications. 
+The rejection of absentee ballot applications is not uncommon, nor is it necessarily evidence of anything 
+untoward. Moreover, a registered voter whose application to vote by mail was rejected can still vote in 
+person. This falsehood appeared in an article published on 100Percent FedUp.com, a NewsGuard Red-rated 
+(or generally unreliable) site. Patty McMurray, the co-owner of the site and the author of the article, 
+told NewsGuard that her site had corrected the article to reflect the distinction between ballots and 
+ballot applications. However, the false, uncorrected post remains accessible on Facebook and appears on 
+at least five large Facebook pages. This claim was one of dozens that Facebook did not flag as false. 
+When a Utah county accidentally sent out 13,000 absentee ballots without a signature line, the NewsGuard 
+Red-rated site LawEnforcementToday.com called this a "cheat-by-mail scheme." The Salt Lake Tribune reported 
+that the Sanpete County Clerk quickly learned of the mistake, which was a printing error, and immediately 
+put information online explaining to voters how to correctly submit their ballot. There was no evidence 
+that the mistake was part of a voter fraud scheme. But on October 15, the post was shared to three connected 
+Facebook pages, with a total reach of 1.1 million followers. None of the posts were marked as false by 
+Facebook's fact-checkers.Conspiratorial stories abounded, with articles warning of violence or other disastrous 
+and unlawful election outcomes with no evidence to support their claims. Greg Palast, a liberal investigative 
+journalist, predicted that 6 million people will vote by mail in Florida, but claimed their votes will likely 
+not be counted. "The GOP-controlled Florida Legislature will say, we can't count them in time, so we're not 
+going to certify the election," Palast wrote, suggesting this move would be part of a ploy to send the decision 
+to the U.S. House, which under the 12th Amendment decides the president if no majority is reached in the electoral 
+college.There is no evidence to suggest that the Florida legislature will refuse to certify the state's results. 
+This article, shared on Facebook to Palast's 109,000 followers, was not flagged as false by Facebook. The three 
+Facebook posts that were flagged by fact-checkers did not include such warnings until after the myth had been 
+published and shared, due to the platform's practice of not providing advance warnings to users about pages that 
+have been known to publish misinformation or hoaxes in the past. Had such warnings existed, Facebook users would 
+have known in advance that they might be exposed to misinformation when reading those pages' posts.Despite Facebook's 
+announced efforts to stop the spread of this type of misinformation, these pages continue to be allowed to publish 
+blatant misinformation about voting and the electoral process — seemingly in violation of the platform's content 
+policies. New false stories emerge daily, with inaccurate and deceptive interpretations of events that are perfectly 
+normal. The result is that Facebook has exposed tens of millions of Americans to falsehoods about America's 
+electoral process.
+```
+
+## Basic Text Extraction with NLP
+```python
+from newspaper import Config
+from newspaper import Article
+from utilities.nlp_utilities import NLPCustomMethods
+
+nlp = NLPCustomMethods()
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+url = 'https://www.newsweek.com/facebook-super-spreader-election-misinformation-1543306'
+article = Article(url, config=config)
+article.download()
+article.parse()
+# the replace is used to remove newlines
+article_text = article.text.replace('\n', '')
+
+remove_stopwords = nlp.expunge_stopwords(article_text)
+normalize_text = nlp.expunge_punctuations(remove_stopwords)
+
+most_common_words = nlp.get_most_common_words(normalize_text, 20)
+print(most_common_words)
+[('facebook', 15), ('false', 9), ('newsguard', 8), ('pages', 8), ('election', 6), ('misinformation', 6), 
+('voting', 5), ('identified', 5), ('electoral', 5), ('ballots', 5), ('shared', 4), ('process', 4), 
+('myths', 4), ('claims', 4), ('ballot', 4), ('evidence', 4), ('article', 4), ('site', 4), ('platform', 3), 
+('content', 3)]
+
+# this output was sorted() and put into a set()
+# noun types can also be tweak under NLPCustomMethods().get_nouns
+nouns = nlp.get_nouns(normalize_text)
+print(nouns)
+['absentee', 'advance', 'amendment', 'americans', 'analysis', 'anything', 'application', 'applications', 
+'article', 'articles', 'audiences', 'author', 'ballot', 'ballots', 'certify', 'cheatbymail', 'claims', 
+'clerk', 'content', 'coowner', 'count', 'county', 'curb', 'deception', 'decides', 'decision', 'distinction', 
+'dozens', 'efforts', 'election', 'error', 'errors', 'events', 'evidence', 'example', 'facebook', 'fact', 
+'factcheckers', 'falsehood', 'falsehoods', 'falsewhen', 'flag', 'florida', 'followers', 'fraud', 'hoaxes', 
+'house', 'information', 'interpretations', 'investigation', 'journalist', 'lawenforcementtodaycom', 'legislature', 
+'line', 'mail', 'majority', 'malpractice', 'managers', 'mcmurray', 'meaning', 'mexicovietnam', 'millions', 
+'misinformation', 'misunderstanding', 'move', 'myth', 'myths', 'narratives', 'officials', 'online', 'others', 
+'pages', 'palast', 'part', 'pennsylvania', 'people', 'person', 'platform', 'players', 'pledge', 'policies', 
+'politicsthe', 'poll', 'post', 'posts', 'practice', 'president', 'printing', 'process', 'processfor', 'reading', 
+'reflect', 'refuse', 'result', 'results', 'rules', 'scheme', 'security', 'send', 'signature', 'site', 'spread', 
+'state', 'stories', 'superspreaders', 'support', 'tens', 'time', 'tribune', 'users', 'violation', 'violence', 
+'vote', 'voter', 'voters', 'votes', 'voting', 'warnings', 'watchers', 'ways', 'week']
+
+
+# this output was sorted() and put into a set()
+# verb types can also be tweak under NLPCustomMethods().get_verbs
+verbs = nlp.get_verbs(normalize_text)
+print(verbs)
+['abounded', 'allowed', 'announced', 'appeared', 'appears', 'articles', 'australia', 'based', 'called', 
+'cast', 'claim', 'claimed', 'connected', 'continue', 'corrected', 'counted', 'cut', 'electionrelated', 
+'emerge', 'examples', 'existed', 'explaining', 'exposed', 'fit', 'flagged', 'flourishing', 'focus', 'found', 
+'foundnewsguard', 'getting', 'going', 'greg', 'identified', 'include', 'known', 'learned', 'least', 'left', 
+'mailin', 'marked', 'mistake', 'october', 'outcomes', 'ploy', 'poll', 'postsdespite', 'practicesthe', 'predicted', 
+'providing', 'published', 'pushing', 'put', 'reach', 'reached', 'redrated', 'rejected', 'rejection', 'relating', 
+'remains', 'reported', 'salt', 'say', 'seem', 'seize', 'selfserving', 'sent', 'shared', 'sowing', 'stop', 
+'submit', 'suggesting', 'thrown', 'told', 'vote', 'voting', 'warning', 'wrote']
+
+word_frequency = nlp.get_frequency_distribution(normalize_text, 20)
+print(word_frequency)
+[('facebook', 15), ('false', 9), ('newsguard', 8), ('pages', 8), ('election', 6), ('misinformation', 6), 
+('voting', 5), ('identified', 5), ('electoral', 5), ('ballots', 5), ('shared', 4), ('process', 4), 
+('myths', 4), ('claims', 4), ('ballot', 4), ('evidence', 4), ('article', 4), ('site', 4), ('platform', 3), 
+('content', 3)]
+```
