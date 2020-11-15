@@ -1,6 +1,15 @@
-<b>Newspaper version: 0.2.8</b> 
+# Special caveats
+<p align="justify">
+The code examples in this repository were designed using <a href="https://github.com/codelucas/newspaper">Newspaper version: 0.2.8</a>. The examples might require modification when there is a version update for <i>Newspaper</i>.
+           
+The last update to this repository was performed on 10-30-2020. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
 
-<b>Last Updated: 10-30-2020</b> 
+For instance, the Die Zeit news site recently added an advertisement and tracking acknowledgement button, which will likely require the use of the <i>Python</i> library <i>selenium</i> coupled with <i>Newspaper</i> extraction code within this repository to extract article elements on that website. 
+
+It's worth pointing out that <i>Newspaper</i> has some extraction limitations, but most of these can be overcome with either snippets of addtional code or by including another <i>Python</i> library in the mix.  
+
+I will update this repository as needed based on extraction questions that I find on either <a href="https://stackoverflow.com/questions/tagged/python-newspaper">Stack Overflow</a> or from <a href="https://github.com/codelucas/newspaper/issues">Newspaper's issue tracker</a> on GitHub. 
+</p>
 
 # Primary objective of this repository
 
