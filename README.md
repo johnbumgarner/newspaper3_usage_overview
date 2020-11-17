@@ -8,6 +8,8 @@ For instance, the Die Zeit news site recently added an advertisement and trackin
 
 It's worth pointing out that <i>Newspaper</i> has some extraction limitations, but most of these can be overcome with either snippets of addtional code or by including another <i>Python</i> library in the mix.  
 
+For example, the web page for <a href="https://foxbaltimore.com">Fox Baltimore</a> cannot currently be parsed using either <i>newspaper.build</i> or <i>newspaper Source</i>. This is because the <i>Fox Baltimore's</i> page is rendered in JavaScript.  To parse this page, one would need to use the <i>Python</i> module <i>BeautifulSoup</i> to extract the content, which can be further processed with <i>newspaper.</i>
+
 I will update this repository as needed based on extraction questions that I find on either <a href="https://stackoverflow.com/questions/tagged/python-newspaper">Stack Overflow</a> or from <a href="https://github.com/codelucas/newspaper/issues">Newspaper's issue tracker</a> on GitHub. 
 </p>
 
