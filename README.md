@@ -83,7 +83,9 @@ article = Article(base_url, config=config)
 ```
 
 <p align="justify">
-<i>Newspaper3k</i> also supports the use of HTTP headers via Config(). The headers are passed as a dictionary.     
+<i>Newspaper3k</i> also supports the use of HTTP headers via Config(). The headers are passed as a dictionary.
+           
+This example was written in response to this <i>Newspaper</i> issue: <a href="https://github.com/codelucas/newspaper/issues/844">"How to use headers when requesting in Article()func?"</a>, which was posted on 09-16-2020.
 </p>
 
 ## Real world basic header usage example
@@ -114,6 +116,8 @@ One of the primary purposes of <i>Newspaper3k</i> is text extraction from a news
 
 <p align="justify">
 BBC News stores their data elements in multiple locations within its source code.  Some of these data elements can be extracted using <i>article.meta_data</i> and others can be accessed through the <i>Python</i> modules <i>BeautifulSoup</i> and <i>JSON</i>. As previously started <i>BeautifulSoup</i> is a dependency of <i>Newspaper3k</i> and can be accessed through <i>newspaper.utils.</i>    
+           
+This example was written in response to this <i>Newspaper</i> issue: <a href="https://github.com/codelucas/newspaper/issues/826">"Unable to pick up BBC Dates"</a>, which was posted on 07-11-2020.
 </p>
 
 ```python
@@ -163,6 +167,8 @@ print(article_title)
 
 <p align="justify">
 The example below is querying an article on the CNN website using <i>Newspaper3k</i>.  The article data elements; title, authors and date published are adequately  extracted using <i>Newspaper3k</i>.  The keywords for this article were not initial discovered by <i>Newspaper3k</i>, but modifying the parameter <i>article.keywords</i> to <i>meta_keywords</i> does yield the keywords related to this article. 
+           
+This example was written in response to this <i>Stack Overflow</i> question: <a href="https://stackoverflow.com/questions/63948084/python-see-timestamp-of-article-provided-by-newspaper3k/64002544#64002544">"Python: See timestamp of article provided by newspaper3k?"</a>, which was posted on 09-18-2020.
 </p>
 
 ```python
@@ -281,6 +287,8 @@ funds while working toward a bigger package.']
 Extracting data elements from the website <i>Fox Baltimore</i> with either <i>Newspaper Build</i> or <i>Newspaper Source</i> is currently not possible. <i>Fox Baltimore</i> embeds the bulk of its content in <i>script</i> tags. This data can be extracted using the <i>Python</i> modules <i>BeautifulSoup</i> and <i>JSON</i>. <i>BeautifulSoup</i> is a dependency of <i>Newspaper3k</i> and can be accessed through <i>newspaper.utils</i>.
            
 As of 11-18-2020 the example below can extract content like <i>Newspaper Build</i> or <i>Newspaper Source</i> does from the main page of a news source. 
+
+This example was written in response to this <i>Newspaper</i> issue: <a href="https://github.com/codelucas/newspaper/issues/859">"Newspaper not extracting pages for Fox Baltimore"</a>, which was posted on 11-14-2020.
 </p>
 
 ```python
@@ -442,7 +450,9 @@ print(article_keywords)
 ## Extraction from offline HTML files
 
 <p align="justify">
-<a href="https://github.com/codelucas/newspaper">Newspaper3k</a> can be used to post-process HTML files that have stored offline. The example below downloads the HTML for a news article from <a href="https://www.cnn.com/2020/10/12/health/johnson-coronavirus-vaccine-pause-bn/index.html">CNN</a>.  After the article is downloaded the file is read into <a href="https://github.com/codelucas/newspaper">Newspaper3k</a> and the data elements with the article are extracted.
+<a href="https://github.com/codelucas/newspaper">Newspaper3k</a> can be used to post-process HTML files that have stored offline. The example below downloads the HTML for a news article from <a href="https://www.cnn.com/2020/10/12/health/johnson-coronavirus-vaccine-pause-bn/index.html">CNN</a>.  After the article is downloaded the file is read into <i>Newspaper</i> and the data elements with the article are extracted.
+           
+This example was written in response to this <i>Stack Overflow</i> question: <a href="https://stackoverflow.com/questions/43281123/how-to-extract-from-stored-html-using-python-newspaper/64163908#64163908">"how to extract from stored HTML using Python Newspaper"</a>, which was posted on 04-17-2017.
 </p>
 
 ```python
@@ -585,7 +595,9 @@ if article_keywords:
 ## Die Zeit Extraction in German
 
 <p align="justify">
-The example below is querying the Die Zeit news site in the German language. <i>Newspaper3k</i> has some difficulties querying and extracting content from this news site.  To bypass these issues, this example uses the <i>Python requests</i> module to query Die Zeit and passes the HTML to <i>Newspaper3k</i> and <i>BeautifulSoup</i> for processing.       
+The example below is querying the Die Zeit news site in the German language. <i>Newspaper3k</i> has some difficulties querying and extracting content from this news site.  To bypass these issues, this example uses the <i>Python requests</i> module to query Die Zeit and passes the HTML to <i>Newspaper3k</i> and <i>BeautifulSoup</i> for processing.   
+ 
+This example was written in response to this <i>Newspaper</i> issue: <a href="https://github.com/codelucas/newspaper/issues/841">"Add support for zeit.de"</a>, which was posted on 09-08-2020.
 </p>
 
 ``` python
@@ -627,8 +639,7 @@ print(article_summary)
 
 ## CSV files 
 <p align="justify">
-Writing data to a comma-separated values (CSV) file is a very common practice in <i>Python</i>. The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article and the associated keywords assigned to this article.  All these data elements are written to an external CSV file. All the data elements were normalized into string variables, which made for 
-easier storage in the CSV file. 
+Writing data to a comma-separated values (CSV) file is a very common practice in <i>Python</i>. The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article and the associated keywords assigned to this article.  All these data elements are written to an external CSV file. All the data elements were normalized into string variables, which made for easier storage in the CSV file. 
 </p>
 
 ```python
@@ -820,6 +831,7 @@ Some caveats about using <i>news_pool</i>:
 
 4. Different data structures - querying mutiple sources could present problems, especially if the news sources use different data structures, such as summaries being in meta-tags on one site and in script tag on the other site. 
 
+This example was written in response to this <i>Newspaper</i> issue: <a href="https://github.com/codelucas/newspaper/issues/838">"Multithread extraction seems to fail at the news_pool.join section"</a>, which was posted on 08-28-2020.
 </p>
 
 ```python
