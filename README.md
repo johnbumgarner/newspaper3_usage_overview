@@ -196,12 +196,11 @@ print(article.meta_keywords)
 ['business', 'Edinburgh Woollen Mill: 24', '000 jobs at risk as company appoints administrators - CNN']
 ```
 
-## Fox News Extraction 
+## Fox Business News Extraction 
 
 <p align="justify">
 Extracting specific data elements from Fox News requires querying the meta tags section of the HTML code. The data elements that can be extracted include the title of the article, the published date of the article and a summary of the article.  Fox News does not use keywords, so extracting these is not possble.  Extracting the authors of the article is also problematic, because Fox News does not use a standard tag (e.g., by-line) for this information.  
 </p>
-
 
 ```python
 from newspaper import Config
@@ -275,6 +274,89 @@ print(article_summary)
 ['In the letter to House and Senate members, Mnuchin and Meadows said the White House would continue to talk to Senate Democratic Leader Chuck Schumer 
 and House Speaker Nancy Pelosi, but that Congress should "immediately vote on a bill" that would enable the use of unused Paycheck Protection Program 
 funds while working toward a bigger package.']
+```
+
+## Fox Baltimore News Extraction 
+<p align="justify">
+Extracting data elements from the website <i>Fox Baltimore</i> with either <i>Newspaper Build</i> or <i>Newspaper Source</i> is currently not possible. <i>Fox Baltimore</i> embeds the bulk of its content in <i>script</i> tags. This data can be extracted using the <i>Python</i> modules <i>BeautifulSoup</i> and <i>JSON</i>. <i>BeautifulSoup</i> is a dependency of <i>Newspaper3k</i> and can be accessed through <i>newspaper.utils</i>.
+           
+As of 11-18-2020 the example below can extract content like <i>Newspaper Build</i> or <i>Newspaper Source</i> does from the main page of a news source. 
+</p>
+
+```python
+import json
+import requests
+import pandas as pd
+from newspaper import Config
+from newspaper import Article
+from newspaper.utils import BeautifulSoup
+
+HEADERS = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0',
+           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
+
+
+def query_foxbaltimore_news():
+    df_foxbaltimore_extraction = pd.DataFrame(columns=['article_category', 'date_published', 'article authors',
+                                                       'article title', 'article summary', 'article keywords',
+                                                       'article url', 'article text'])
+
+    url = 'http://foxbaltimore.com/'
+    response = requests.get(url, headers=HEADERS, allow_redirects=True, verify=True, timeout=30)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    fox_soup = soup.find_all("script", {"type": "application/json"})[1]
+    fox_json = json.loads(''.join(fox_soup))
+    for news in fox_json['content']['page-data']['teaser']:
+        for article in news['teasers']:
+            article_category = article['categories'][0]
+            article_title = article['title']
+            article_url = f"https://foxbaltimore.com{article['url']}"
+            article_summary = article['summary']
+            article_published_date = article['publishedDateISO8601']
+            if 'sponsored' not in article_url:
+                article_details = query_individual_article_elements(article_url)
+                df_foxbaltimore_extraction = df_foxbaltimore_extraction.append({'article category':article_category,
+                                                                       'date_published': article_published_date,
+                                                                       'article authors': article_details[0],
+                                                                       'article title': article_title,
+                                                                       'article summary': article_summary,
+                                                                       'article keywords': article_details[3],
+                                                                       'article url': article_url,
+                                                                       'article text': article_details[5]}, ignore_index=True)
+    return df_foxbaltimore_extraction
+
+
+def query_individual_article_elements(url):
+    config = Config()
+    config.headers = HEADERS
+    config.request_timeout = 30
+    article = Article(url, config=config, memoize_articles=False)
+    article.download()
+    article.parse()
+    article_meta_data = article.meta_data
+
+    article_author = article.authors
+
+    article_published_date = str({value['published_time'] for (key, value) in article_meta_data.items()
+                                  if key == 'article'})
+
+    article_keywords = sorted([value.lower() for (key, value) in article_meta_data.items() if key == 'keywords'])
+
+    article_title = str({value for (key, value) in article_meta_data.items() if key == 'title'})
+
+    article_summary = {value for (key, value) in article_meta_data.items() if key == 'description'}
+
+    soup = BeautifulSoup(article.html, 'html.parser')
+    fox_soup = soup.find_all("script", {"type": "application/json"})[1]
+    fox_json = json.loads(''.join(fox_soup))
+    article_text = ''.join(fox_json['content']['main_content']['story']['richText'])
+    article_details = [article_author,
+                       article_published_date,
+                       article_title,
+                       article_keywords,
+                       article_summary,
+                       article_text]
+
+    return article_details
 ```
 
 ## Wall Street Journal Extraction 
