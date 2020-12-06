@@ -2,7 +2,7 @@
 <p align="justify">
 The code examples in this repository were designed using <a href="https://github.com/codelucas/newspaper">Newspaper version: 0.2.8</a>. The examples might require modification when there is a version update for <i>Newspaper</i>.
            
-The last update to this repository was performed on <b>11-19-2020</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
+The last update to this repository was performed on <b>12-05-2020</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
 
 For instance, the Die Zeit news site recently added an advertisement and tracking acknowledgement button, which will likely require the use of the <i>Python</i> library <i>selenium</i> coupled with <i>Newspaper</i> extraction code within this repository to extract article elements on that website. 
 
@@ -502,6 +502,48 @@ with open("cnn.html", 'r') as f:
     print(article_keywords)
     {"health, Johnson & Johnson pauses Covid-19 vaccine trial after 'unexplained illness' - CNN"}
 ```
+
+# Newspaper Article caching
+<p align="justify">
+<i>Newspaper3k</i> is designed to caches all previously extracted articles from a specific source.  The primary reason for caching these articles is prevent duplicate querying for a given article. <i>Newspaper3k</i> has a parameter named <i>memoize_articles</i>, which is enabled to <i>"True"</i> by default. 
+           
+For instance both of these queries have the parameter <i>memoize_articles=True</i> automatically set by <i>Newspaper3k</i>.
+
+``` python
+cnn_articles = newspaper.build('https://www.cnn.com/', config=config)
+
+article = Article('https://www.cnn.com/2020/12/05/health/us-hospitals-covid-pandemic/index.html', config=config)
+ ```
+
+With this parameter set to <i>"True"</i> newspaper will write information related to these queries to a temporary directory named <i>.newspaper_scraper</i>. This directory will have a minimum of two sub-directories, which are: <i>feed_category_cache</i> and <i>memoized</i>. The URLs for news sources will be written to a text file (e.g., www.cnn.com.txt) in the sub-directory <i>memoized</i>.  
+
+I noted that even if you set the parameter <i>memoize_articles</i> to <i>"False"</i> these sub-directories are still created and one file is written to sub-directory <i>feed_category_cache</i> when using <i>newspaper.build</i>. So far, I have not found a method to prevent <i>Newspaper3k</i> from creating these sub-directories or redirecting them to a RAMDISK in memory.
+
+``` python
+cnn_articles = newspaper.build('https://www.cnn.com/', config=config,  memoize_articles=False)
+
+article = Article('https://www.cnn.com/2020/12/05/health/us-hospitals-covid-pandemic/index.html', config=config, memoize_articles=False)
+ ```
+
+Accessing this temporary directory in macOS can be accomplished in the following matter via the terminal. 
+
+``` echo $TMPDIR
+cd <path from $TMPDIR>
+cd .newspaper_scraper/
+cd memoized
+ls 
+www.cnn.com.txt
+cat www.cnn.com.txt 
+https://www.cnn.com/business/media
+https://www.cnn.com/travel/news
+https://www.cnn.com/2020/12/04/entertainment/mariah-carey-christmas-special/index.html
+https://www.cnn.com/2020/12/04/entertainment/your-honor-review/index.html
+https://www.cnn.com/2020/12/04/entertainment/star-wars-animation-column/index.html
+https://www.cnn.com/2020/12/05/entertainment/lgbtq-holiday-movies-trnd/index.html
+https://www.cnn.com/2020/12/04/entertainment/saturday-night-live-jason-bateman/index.html
+https://www.cnn.com/2020/12/03/entertainment/blackpink-concert-trnd/index.html
+```
+</p>
 
 # Newspaper language support
 <p align="justify">
