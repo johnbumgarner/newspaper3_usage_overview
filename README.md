@@ -515,7 +515,7 @@ cnn_articles = newspaper.build('https://www.cnn.com/', config=config)
 article = Article('https://www.cnn.com/2020/12/05/health/us-hospitals-covid-pandemic/index.html', config=config)
  ```
 
-With this parameter set to <i>"True"</i> newspaper will write information related to these queries to a temporary directory named <i>.newspaper_scraper</i>. This directory will have a minimum of two sub-directories, which are: <i>feed_category_cache</i> and <i>memoized</i>. The URLs for news sources will be written to a text file (e.g., www.cnn.com.txt) in the sub-directory <i>memoized</i>.  
+With this parameter set to <i>"True"</i> newspaper will write information related to these queries to a temporary directory named <i>.newspaper_scraper</i>. This directory will have a minimum of two sub-directories, which are: <i>feed_category_cache</i> and <i>memoized</i>. The URLs for news sources will be written to a text file (e.g., www.cnn.com.txt) in the sub-directory <i>memoized</i>.  The source code for <i>Newspaper3k</i> indicates that this cache will be maintained for 5 days. The cache is automatically updated with each query of given source (e.g. cnn.com).
 
 I noted that even if you set the parameter <i>memoize_articles</i> to <i>"False"</i> these sub-directories are still created and one file is written to sub-directory <i>feed_category_cache</i> when using <i>newspaper.build</i>. So far, I have not found a method to prevent <i>Newspaper3k</i> from creating these sub-directories or redirecting them to a RAMDISK in memory.
 
