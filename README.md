@@ -2,7 +2,7 @@
 <p align="justify">
 The code examples in this repository were designed using <a href="https://github.com/codelucas/newspaper">Newspaper version: 0.2.8</a>. The examples might require modification when there is a version update for <i>Newspaper</i>.
            
-The last update to this repository was performed on <b>12-05-2020</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
+The last update to this repository was performed on <b>12-13-2020</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
 
 For instance, the Die Zeit news site recently added an advertisement and tracking acknowledgement button, which will likely require the use of the <i>Python</i> library <i>selenium</i> coupled with <i>Newspaper</i> extraction code within this repository to extract article elements on that website. 
 
@@ -1013,7 +1013,7 @@ normal. The result is that Facebook has exposed tens of millions of Americans to
 electoral process.
 ```
 
-## Basic Text Extraction with NLP
+## Basic Text Extraction with the Natural Language Toolkit (NLTK)
 ```python
 from newspaper import Config
 from newspaper import Article
@@ -1083,3 +1083,81 @@ print(word_frequency)
 ('myths', 4), ('claims', 4), ('ballot', 4), ('evidence', 4), ('article', 4), ('site', 4), ('platform', 3), 
 ('content', 3)]
 ```
+
+## Article summarization methods
+<p align="justify">
+<a href="https://github.com/codelucas/newspaper">Newspaper3k</a> has the capabilities to create a summary of the article text, but <i>newspaper<i> does not have the flexibility to tweak the the process. 
+           
+The example directly below shows how to use summarization with <i>newspaper<i>.  The article being summarized is part of The Guardian's "Long Read" essays.  The article's title is <i>The curse of 'white oil': electric vehicles' dirty secret</i> and its length is approximately 4400 words. <i>Newspaper<i> is designed to summarize to 5 lines, which in this case is around 107 words.
+           
+<p>
+           
+```python
+           
+from newspaper import Config
+from newspaper import Article
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+base_url = 'https://www.theguardian.com/news/2020/dec/08/the-curse-of-white-oil-electric-vehicles-dirty-secret-lithium'
+article = Article(base_url, config=config)
+article.download()
+article.parse()
+article.nlp()
+print(article.summary)
+
+The sudden excitement surrounding petróleo branco (“white oil”) derives from an invention rarely seen in these parts: the electric car.
+More than half (55%) of global lithium production last year originated in just one country: Australia.
+The Portuguese government is preparing to offer licences for lithium mining to international companies in a bid to exploit its “white oil” reserves.
+As manufacture has slowed down, a glut of lithium on global markets has dampened the white oil boom, if only temporarily.
+If people were better informed, he reasoned, it’s just possible that public opinion could swing to their side, and the country’s lithium mining plans could get shelved.
+```
+
+<p align="justify">
+The example below uses the <i>Python library</i> <a href="https://pypi.org/project/sumy">sumy</a>, which is an automatic text summarizer.  <i>Sumy</i> has multiple algorithms that can be used to summarize text.  The summarizer being used in ths example is <i>LexRank</i>, which using the <a href=" https://web.eecs.umich.edu/~mihalcea/papers/mihalcea.emnlp04.pdf"> PageRank</a> algorithm in an unsupervised approach.  <i>LexRank</i> creates a summary with 151 words.
+<p>
+
+```python
+from newspaper import Article
+from sumy.utils import get_stop_words
+from sumy.nlp.stemmers import Stemmer
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.summarizers.lex_rank import LexRankSummarizer as Summarizer
+
+LANGUAGE = "english"
+
+# configurable number of sentences
+SENTENCES_COUNT = 5
+
+article = Article('https://www.theguardian.com/news/2020/dec/08/the-curse-of-white-oil-electric-vehicles-dirty-secret-lithium')
+article.download()
+article.parse()
+
+# text cleaning
+text = "".join(article.text).replace("\n", " ").replace('"', "").replace("• Follow the Long Read on Twitter at @gdnlongread, and sign up to the long read weekly email here.", "")
+
+parser = PlaintextParser.from_string(text, Tokenizer(LANGUAGE))
+stemmer = Stemmer(LANGUAGE)
+
+summarizer = Summarizer(stemmer)
+summarizer.stop_words = get_stop_words(LANGUAGE)
+
+article_summary = []
+for sentence in summarizer(parser.document, SENTENCES_COUNT):
+    article_summary.append(str(sentence))
+
+clean_summary = ' '.join([str(elem) for elem in article_summary])
+print(clean_summary)
+
+Savannah is just one of several mining companies with an eye on the rich lithium deposits of central and northern Portugal. A series of local and national protests, including a march in Lisbon last year, sought to raise awareness about the impacts of modern mining on the natural environment, including potential industrial-scale habitat destruction, chemical contamination and noise pollution, as well as high levels of water consumption. The extra materials and energy involved in manufacturing a lithium-ion battery mean that, at present, the carbon emissions associated with producing an electric car are higher than those for a vehicle running on petrol or diesel – by as much as 38%, according to some calculations. In the case of Savannah’s mine in northern Portugal, the company concedes there will be local environmental impact, but argues that it will be outweighed by the upsides (inward investment, jobs, community projects). These interior regions need investment.
+
+```
+<p align="justify">
+The Guardian's article <i>The curse of 'white oil': electric vehicles' dirty secret</i> is about the environmental impact of mining lithium for electric vehicles.
+The <i>sumy</i> summarization seems to be more accurate than <i>newspaper's<i> summarization for the same article.      
+<p>
