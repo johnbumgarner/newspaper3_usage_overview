@@ -2,7 +2,7 @@
 <p align="justify">
 The code examples in this repository were designed using <a href="https://github.com/codelucas/newspaper">Newspaper version: 0.2.8</a>. The examples might require modification when there is a version update for <i>Newspaper</i>.
            
-The last update to this repository was performed on <b>12-13-2020</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
+The last update to this repository was performed on <b>12-28-2020</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
 
 For instance, the Die Zeit news site recently added an advertisement and tracking acknowledgement button, which will likely require the use of the <i>Python</i> library <i>selenium</i> coupled with <i>Newspaper</i> extraction code within this repository to extract article elements on that website. 
 
@@ -445,6 +445,51 @@ article_keywords = sorted(keywords.lower().split(','))
 print(article_keywords)
 ['c&e exclusion filter', 'c&e industry news filter', 'codes_reviewed', 'commodity/financial market news', 'content types', 
 'corporate/industrial news', 'earnings', 'equity markets', 'factiva filters', 'financial performance']
+```
+
+## Extraction from Wayback Machine archives
+<p align="justify">
+An unanswered <a href="https://stackoverflow.com/questions/41680013/python-newspaper-with-web-archive-wayback-machine/65476836#65476836">Stack Overflow question</a> from 2017 prompted me to explore how to extract article content from the Wayback Machine archives. 
+           
+That question was attempting to use <i>newspaper.build</i> to extract the archived articles.  I could not get <i>newspaper.build</i> to work correctly, but I was able to use <i>newspaper Source</i> to query and extract articles from the archives.
+           
+</p>
+           
+```python
+from time import sleep
+from random import randint
+from newspaper import Config
+from newspaper import Source
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+cnbc_wayback_archive = Source(url='https://web.archive.org/web/20180301012621/https://www.cnbc.com/', config=config,
+                      memoize_articles=False, language='en', number_threads=20, thread_timeout_seconds=2)
+
+cnbc_wayback_archive.build()
+for article in cnbc_wayback_archive.articles:
+    article.download()
+    article.parse()
+    article_meta_data = article.meta_data
+
+    print(article.publish_date)
+    print(article.title)
+
+    article_description = "".join({value for (key, value) in article_meta_data.items() if key == 'description'})
+    print(article_description)
+
+    article_keywords = {value for (key, value) in article_meta_data.items() if key == 'keywords'}
+    print(list(article_keywords))
+
+    print(article.url)
+
+    # this sleep timer is helping with some timeout issues
+    # that happened when querying
+    sleep(randint(1, 5))
 ```
 
 ## Extraction from offline HTML files
