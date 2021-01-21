@@ -2,7 +2,7 @@
 <p align="justify">
 The code examples in this repository were designed using <a href="https://github.com/codelucas/newspaper">Newspaper version: 0.2.8</a>. The examples might require modification when there is a version update for <i>Newspaper</i>.
            
-The last update to this repository was performed on <b>12-28-2020</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
+The last update to this repository was performed on <b>01-21-2021</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
 
 For instance, the Die Zeit news site recently added an advertisement and tracking acknowledgement button, which will likely require the use of the <i>Python</i> library <i>selenium</i> coupled with <i>Newspaper</i> extraction code within this repository to extract article elements on that website. 
 
@@ -720,6 +720,122 @@ print(article_title)
 article_summary = [value for (key, value) in zeit_dictionary.items() if key == 'description']
 print(article_summary)
 ['Tote bei Protesten zwischen Linken und Rechten, Terrorpläne im eigenen Land: Die Gewaltbereitschaft in den USA ist vor der Wahl hoch. Und der Präsident deeskaliert nicht.']
+```
+
+## Al Arabiya Extraction in Arabic
+
+<p align="justify">
+The example below is querying the Al Arabiya news site in the Arabic language. This example was written in response to this <i>Newspaper</i> issue: <a href="https://github.com/codelucas/newspaper/issues/869">"Does not fetch arabic news,"</a> which was posted on 01-16-2021.  The OP (original poster) could not get <i>Newspaper</i> to extract news content from the <a href="https://www.alarabiya.net">Al Arabiya website.</a> The primary reason for <i>Newspaper</i> not being to extract content was because of a cookie acknowledgement button and subscribe button.  Both these buttons require an end-user to click them before browsing the website either manually or with automated techniques.  To bypass these button an end-user using automated techniques would need to use additional <i>Python</i> modules, such as <a href="https://scrapy.org/">Scrapy</a> or <a href="https://www.selenium.dev/">Selenium.</a>.  
+
+The code example below is using <i>Selenium</i>, <a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/">BeautifulSoup</a> and <i>Newspaper</i>. During testing I noted that the subscribe button has random visibility on the page.  I attempted to deal with this in my code, but I'm sure that section can be improved upon.  It's also worth noting that I could not get <i>Selenium</i> to pass the <i>browser.page_source</i> to either <i>Newspaper Source</i> or <i>newspaper.build</i>.  Because of this I passed <i>browser.page_source</i> to <i>BeautifulSoup.</i> 
+
+As of 01-21-2021 the code example below worked.  I did not fully validate the articles content being extraction, because I do not speak Arabic.  Additionally  individual article element can be extracted from either the META tags or Javascript section of each specific article page.  That code can be easily added with examples provided in this overview document. 
+
+</p>
+
+``` python
+import sys
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
+
+from bs4 import BeautifulSoup
+
+from newspaper import Article
+from newspaper import Config
+
+# config details for newspaper
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+
+def get_chrome_webdriver():
+    chrome_options = Options()
+    chrome_options.add_argument("--test-type")
+    chrome_options.add_argument('--ignore-certificate-errors')
+    chrome_options.add_argument('--disable-extensions')
+    chrome_options.add_argument('disable-infobars')
+    chrome_options.add_argument("--incognito")
+    # chrome_options.add_argument('--headless')
+
+    # window size as an argument is required in headless mode
+    chrome_options.add_argument('window-size=1920x1080')
+    driver = webdriver.Chrome('/usr/local/bin/chromedriver', options=chrome_options)
+    return driver
+
+
+def get_chrome_browser(url):
+    browser = get_chrome_webdriver()
+    browser.get(url)
+    return browser
+
+
+def chrome_browser_teardown(browser):
+    browser.close()
+    browser.quit()
+    return
+
+
+def bypass_popup_warnings(browser):
+    try:
+        hidden_element = WebDriverWait(browser, 120).until(EC.presence_of_element_located((By.ID, "wzrk-cancel")))
+        if hidden_element.is_displayed():
+            browser.implicitly_wait(20)
+            subscribe_button = browser.find_element_by_xpath("//*[@id='wzrk-cancel']")
+            ActionChains(browser).move_to_element(subscribe_button).click(subscribe_button).perform()
+            browser.implicitly_wait(20)
+            cookie_button = browser.find_element_by_xpath("//span[@onclick='createCookie()']")
+            ActionChains(browser).move_to_element(cookie_button).click(cookie_button).perform()
+            return True
+        else:
+            browser.implicitly_wait(20)
+            cookie_button = browser.find_element_by_xpath("//span[@onclick='createCookie()']")
+            ActionChains(browser).move_to_element(cookie_button).click(cookie_button).perform()
+            return True
+
+    except NoSuchElementException:
+        print('Webdriver is unable to identify the requested element during runtime.')
+        sys.exit(1)
+
+    except WebDriverException:
+        print('The Element Click command could not be completed because the element receiving the events is obscuring the element that was requested clicked.')
+        sys.exit(1)
+
+
+def query_al_arabiya_news(browser):
+    news_urls = []
+    soup = BeautifulSoup(browser.page_source, 'lxml')
+    for a in soup.find_all('a', href=True):
+        if str(a['href']).startswith('/ar/'):
+            news_urls.append(f"https://www.alarabiya.net/{a['href']}")
+    for url in news_urls:
+        article = Article(url, config=config, language='ar')
+        article.download()
+        article.parse()
+        
+        # additional code required to extract article elements
+        # please review the page source to determine the techniques 
+        # needed
+        print(article.title)
+        
+    return True
+
+
+news_browser = get_chrome_browser('https://www.alarabiya.net')
+warnings_closed = bypass_popup_warnings(news_browser)
+if warnings_closed is True:
+    finished = query_al_arabiya_news(news_browser)
+    if finished is True:
+        chrome_browser_teardown(news_browser)
+
 ```
 
 # Saving Extracted Data
