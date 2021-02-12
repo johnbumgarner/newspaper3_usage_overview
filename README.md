@@ -553,7 +553,7 @@ with open("cnn.html", 'r') as f:
 <p align="justify">
 <i>Newspaper3k</i> has some limitations surrounding basic content extraction.  These limitations are normally related to either the hardcoded <i>HTML tags</i> within the extraction source code for <i>Newspaper3k</i> or because a user does not fully understand the capabilities of <i>Newspaper3k</i> when extracting from a specific source.</p>
 
-<b>Author Name Missing</b>
+<b>Question One: <i>Author Name Missing</i></b>
 
 <p align="justify">
 From example this <i>Stack Overflow</i> question <a href="https://stackoverflow.com/questions/66122449/newsletter3k-am-i-did-something-wrong-author-function-did-not-pick-up-author-i/66139240">"article.authors not getting author's name"</a> is primarily related to the structure of a news source.
