@@ -2,7 +2,7 @@
 <p align="justify">
 The code examples in this repository were designed using <a href="https://github.com/codelucas/newspaper">Newspaper version: 0.2.8</a>. The examples might require modification when there is a version update for <i>Newspaper</i>.
            
-The last update to this repository was performed on <b>01-21-2021</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
+The last update to this repository was performed on <b>02-12-2021</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
 
 For instance, the Die Zeit news site recently added an advertisement and tracking acknowledgement button, which will likely require the use of the <i>Python</i> library <i>selenium</i> coupled with <i>Newspaper</i> extraction code within this repository to extract article elements on that website. 
 
@@ -842,7 +842,7 @@ if warnings_closed is True:
 
 ## CSV files 
 <p align="justify">
-Writing data to a comma-separated values (CSV) file is a very common practice in <i>Python</i>. The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article and the associated keywords assigned to this article.  All these data elements are written to an external CSV file. All the data elements were normalized into string variables, which made for easier storage in the CSV file. 
+Writing data to a comma-separated values (CSV) file is a very common practice in <i>Python</i>. The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items being extracted include; the publish date for the article, the authors of this article, the title and summary for this article and the associated keywords assigned to this article.  All these data elements are written to an external CSV file. All the data elements were normalized into string variables, which made for easier storage in the CSV file. 
 </p>
 
 ```python
@@ -891,10 +891,228 @@ with open('wsj_extraction_results.csv', 'a', newline='') as csvfile:
 ```
 
 
+## HTML files 
+<p align="justify">
+Writing data to a Hypertext Markup Language (HTML) file is a very common practice in <i>Python</i>. The example below extracts content from multiple <a href="https://www.latimes.com/">Los Angeles Times</a> articles.  The items being extracted include; the publish date for the article, the authors of this article, the title, summary and text of this article and the top image for the article. All these data elements are written to an external HTML file. All the data elements were normalized into string variables, which made for easier storage in the HTML file. 
+</p>
+
+``` python
+import json
+import pandas as pd
+from datetime import datetime
+from newspaper import Config
+from newspaper import Article
+from newspaper.utils import BeautifulSoup
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+
+def path_to_image_html(link):
+    """
+    Converts image links to HTML tags
+    :param link: image URL
+    :return: URL wrapped in clickable HTML tag
+    """
+    return f'<a href="{link}"> <img src="{link}" width="60" > </a>'
+
+
+def harvest_article_content(website):
+    """
+    Queries and extracts specific content from a LA Times article.
+    :param website: URL for a LA Times article
+    :return: pandas dataframe
+    """
+    df_latimes_extraction = pd.DataFrame(columns=['Date Published', 'URL', 'Author', 'Title',
+                                                  'Summary', 'Text', 'Main Image'])
+
+    article = Article(website, config=config)
+    article.download()
+    article.parse()
+
+    soup = BeautifulSoup(article.html, 'html.parser')
+    la_times_dictionary = json.loads("".join(soup.find("script", {"type": "application/ld+json"}).contents))
+
+    date_published = ''.join([value for (key, value) in la_times_dictionary.items() if key == 'datePublished'])
+    clean_date = datetime.strptime(date_published, "%Y-%m-%dT%H:%M:%S.%f%z").strftime('%Y-%m-%d')
+
+    article_author = ''.join([value[0]['name'] for (key, value) in la_times_dictionary.items() if key == 'author'])
+    article_title = ''.join([value for (key, value) in la_times_dictionary.items() if key == 'headline'])
+    article_url = ''.join([value for (key, value) in la_times_dictionary.items() if key == 'url'])
+    article_description = ''.join([value for (key, value) in la_times_dictionary.items() if key == 'description'])
+    article_body = ''.join([value.replace('\n', ' ') for (key, value) in la_times_dictionary.items() if key ==
+                            'articleBody'])
+
+    local_df = save_article_data(df_latimes_extraction, clean_date,
+                                 f'<a href="{article_url}">{article_url}</a>',
+                                 article_author,
+                                 article_title,
+                                 article_description,
+                                 article_body,
+                                 article.top_image)
+    return local_df
+
+
+def save_article_data(df, published_date, website, authors, title, summary, text, main_image):
+    """
+    Writes extracted article content to a pandas dataframe.
+
+    :param df: pandas dataframe
+    :param published_date: article's published date
+    :param website: article's URL
+    :param authors: article's author
+    :param title: article's title
+    :param summary: article's summary
+    :param text: article's text
+    :param main_image: article's top image
+    :return: pandas dataframe
+    """
+    local_df = df.append({'Date Published': published_date,
+                          'URL': website,
+                          'Author': authors,
+                          'Title': title,
+                          'Summary': summary,
+                          'Text': text,
+                          'Main Image': path_to_image_html(main_image)}, ignore_index=True)
+    return local_df
+
+
+def create_html_file(df):
+    """
+    Writes a pandas dataframe that contains extracted article content to a HTML file.
+
+    :param df: pandas dataframe
+    :return:
+    """
+    pd.set_option('colheader_justify', 'center')
+
+    html_string = '''
+    <html>
+      <head>
+      <meta charset="utf-8">
+      <title>Los Angeles Times Article Information</title></head>
+      <link rel="stylesheet" type="text/css" href="df_style.css"/>
+      <body>
+        {table}
+      </body>
+    </html>.
+    '''
+
+    with open('latimes_results.html', 'w') as f:
+        f.write(html_string.format(table=df.to_html(index=False, escape=False, classes='mystyle')))
+
+    return None
+
+
+# List used to store pandas content extracted 
+# from articles.
+article_data = []
+
+urls = ['https://www.latimes.com/environment/story/2021-02-10/earthquakes-climate-change-threaten-california-dams',
+        'https://www.latimes.com/business/story/2021-02-08/tesla-invests-in-bitcoin',
+        'https://www.latimes.com/business/story/2021-02-09/joe-biden-wants-100-clean-energy-will-california-show-that-its-possible']
+
+for url in urls:
+    results = harvest_article_content(url)
+    article_data.append(results)
+
+# concat all the article content into a new pandas dataframe.
+df_latimes = pd.concat(article_data)
+
+# Create the HTML file 
+create_html_file(df_latimes)
+
+```
+
+<p align="justify"> The custom Cascading Style Sheets(CSS) below is used to override the standard one embedded in the Python module <i>pandas.</i> This CSS file can be easily modified to fit your own style requirements. Save this file as <i>df_style.css</i> on your local system.</p>
+
+``` css
+/*  This is a custom Cascading Style Sheets(CSS) that used to format a 
+pandas dataframe that is being exported to a HTML file.  
+*/
+
+
+.mystyle {
+    font-size: 12pt; 
+    font-family: Arial;
+    border-collapse: collapse; 
+    border: 4px solid silver;
+    width: 100%;
+
+}
+
+.mystyle th {
+    color: white;
+    background: black;
+    text-align:left;
+    vertical-align:center;
+    padding: 5px;
+    white-space: nowrap;
+
+}
+
+.mystyle td {
+	text-align:left;
+	vertical-align:top;
+    padding: 5px;
+
+}
+
+/* link color
+https://www.colorhexa.com/0076dc
+*/
+.mystyle a {color:#0076dc}
+
+
+/* hover link color
+https://www.colorhexa.com/0076dc
+*/
+.mystyle a:hover {color:#dc6600}
+
+
+/* expand column width for author name using nowrap */
+.mystyle td:nth-child(3) {
+    text-align:left;
+	vertical-align:top;
+    padding: 5px;
+    white-space: nowrap;
+
+}
+
+/* on-hover for main image column 
+https://www.colorhexa.com/0076dc
+*/
+.mystyle td:nth-child(7) a:hover {
+	box-shadow: 5px 5px 2.5px #dc6600;
+	-moz-box-shadow: 0px 10px 5px #dc6600;
+	-webkit-box-shadow: 0px 10px 5px #dc6600; 
+
+}
+
+/* alternating row color
+https://www.colorhexa.com/f0f8ff
+*/
+.mystyle tr:nth-child(even) {
+    background: #f0f8ff;
+}
+
+/* on-hover color 
+https://www.colorhexa.com/d7ecff
+*/
+.mystyle tr:hover {
+    background: #d7ecff;
+    cursor: pointer;
+
+}
+
+```
 
 ## JSON files 
 <p align="justify">
-Writing data to a JSON file is also very common practice in <i>Python</i>. The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items extracted include; the publish date for the article, the authors of this article, the title and summary for this article, the associated keywords assigned to this article and the URL of the article.  All these data elements are written to an external JSON file. All the data elements were normalized into string variables, which made for easier storage in the JSON file. 
+Writing data to a JSON file is also very common practice in <i>Python</i>. The example below extracts content from a <a href="https://www.wsj.com/articles/investors-are-betting-corporate-earnings-have-turned-a-corner-11602408600?mod=hp_lead_pos1">Wall Street Journal</a> article.  The items being extracted include; the publish date for the article, the authors of this article, the title and summary for this article, the associated keywords assigned to this article and the URL of the article.  All these data elements are written to an external JSON file. All the data elements were normalized into string variables, which made for easier storage in the JSON file. 
 </p>
 
 ```python
@@ -1018,6 +1236,7 @@ df_wsj_extraction = df_wsj_extraction.append({'date_published': article_publishe
 print(df_wsj_extraction.to_string(index=False))
 
 ```
+
 
 # Newspaper NewsPool Threading 
 
