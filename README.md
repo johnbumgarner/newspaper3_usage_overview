@@ -4,9 +4,9 @@ The code examples in this repository were designed using <a href="https://github
            
 The last update to this repository was performed on <b>02-12-2021</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
 
-For instance, the Die Zeit news site recently added an advertisement and tracking acknowledgement button, which will likely require the use of the <i>Python</i> library <i>selenium</i> coupled with <i>Newspaper</i> extraction code within this repository to extract article elements on that website. 
+For instance, the Die Zeit news site added an advertisement and tracking acknowledgement button, which now requires the use of the <i>Python</i> library <i>selenium</i> coupled with <i>Newspaper</i> extraction code to extract article elements from this news source. 
 
-It's worth pointing out that <i>Newspaper</i> has some extraction limitations, but most of these can be overcome with either snippets of addtional code or by including another <i>Python</i> library in the mix.  
+It's worth pointing out that <i>Newspaper</i> has some extraction limitations, but most of these can be overcome with either snippets of additional code or by including another <i>Python</i> library in the mix.  
 
 For example, the web page for <a href="https://foxbaltimore.com">Fox Baltimore</a> cannot currently be parsed using either <i>newspaper.build</i> or <i>newspaper Source</i>. This is because the <i>Fox Baltimore's</i> page is rendered in JavaScript.  To parse this page, one would need to use the <i>Python</i> module <i>BeautifulSoup</i> to extract the content, which can be further processed with <i>newspaper.</i>
 
@@ -548,6 +548,48 @@ with open("cnn.html", 'r') as f:
     {"health, Johnson & Johnson pauses Covid-19 vaccine trial after 'unexplained illness' - CNN"}
 ```
 
+## Common Newspaper Extraction Questions
+
+<p align="justify">
+<i>Newspaper3k</i> has some limitations surrounding basic content extraction.  These limitations are normally related to either the hardcoded <i>HTML tags</i> within the extraction source code for <i>Newspaper3k</i> or because a user does not fully understand the capabilities of <i>Newspaper3k</i> when extracting from a specific source.</p>
+
+<b>Author Name Missing</b>
+
+<p align="justify">
+From example this <i>Stack Overflow</i> question <a href="https://stackoverflow.com/questions/66122449/newsletter3k-am-i-did-something-wrong-author-function-did-not-pick-up-author-i/66139240">"article.authors not getting author's name"</a> is primarily related to the structure of a news source.
+
+<i>Newspaper3k</i> uses the <i>Python</i> package <i>Beautiful Soup</i> to extract items, such as author names from a news website. The tags that Newspaper3k queries are pre-defined within <i>Newspaper3k</i> source code. <i>Newspaper3k</i> makes a best effort to extract content from these pre-defined tags on a news site.
+
+BUT not all news sources are structured the same, so <i>Newspaper3k</i> will miss certain content, because a tag (e.g., author's name) will be a different place in the HTML structure.
+
+For instance <i>Newspaper3k version: 0.2.8</i> looks for the author name in these tags:
+
+VALS = ['author', 'byline', 'dc.creator', 'byl']
+
+The tags <i>author</i>, <i>byline</i> and <i>byl</i> are normally located in the main body of a webpage. The tag <i>dc.creator</i> is always located in the META tag section of a news source. If your news source has a different author tag in the META section, such as <i>article.author</i>, which the <i>Los Angeles Times</i> uses then you must query that tag like this:
+
+```python
+article_meta_data = article.meta_data
+article_author = {value for (key, value) in article_meta_data['article'].items() if key == 'author'}
+```
+
+The <i>Los Angeles Times</i> also has the author name in the JSON-LD (JavaScript Object Notation for Linked Data) section of the webpage's source code. To extract content from this JSON section you would query the information this way:
+
+```python
+from newspaper.utils import BeautifulSoup
+
+article = Article(website, config=config)
+article.download()
+article.parse()
+
+soup = BeautifulSoup(article.html, 'html.parser')
+la_times_dictionary = json.loads("".join(soup.find("script", {"type": "application/ld+json"}).contents))
+article_author = ''.join([value[0]['name'] for (key, value) in la_times_dictionary.items() if key == 'author'])
+```
+</p>
+
+
+
 # Newspaper Article caching
 <p align="justify">
 <i>Newspaper3k</i> is designed to caches all previously extracted articles from a specific source.  The primary reason for caching these articles is prevent duplicate querying for a given article. <i>Newspaper3k</i> has a parameter named <i>memoize_articles</i>, which is enabled to <i>"True"</i> by default. 
@@ -1027,7 +1069,7 @@ create_html_file(df_latimes)
 
 ```
 
-<p align="justify"> The custom Cascading Style Sheets(CSS) below is used to override the standard one embedded in the Python module <i>pandas.</i> This CSS file can be easily modified to fit your own style requirements. Save this file as <i>df_style.css</i> on your local system.</p>
+<p align="justify"> The custom Cascading Style Sheets(CSS) below is used to override the standard one embedded in the <i>Python</i> module <i>pandas.</i> This CSS file can be easily modified to fit your own style requirements. Save this file as <i>df_style.css</i> on your local system.</p>
 
 ``` css
 /*  This is a custom Cascading Style Sheets(CSS) that used to format a 
@@ -1541,3 +1583,4 @@ Savannah is just one of several mining companies with an eye on the rich lithium
 The Guardian's article <i>The curse of 'white oil': electric vehicles' dirty secret</i> is about the environmental impact of mining lithium for electric vehicles.
 The <i>sumy</i> summarization seems to be more accurate than <i>newspaper's<i> summarization for the same article.      
 <p>
+	
