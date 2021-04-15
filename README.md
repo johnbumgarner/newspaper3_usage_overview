@@ -880,7 +880,7 @@ if warnings_closed is True:
 
 ```
 
-##  News sites with GDPR acknowledgement buttons
+##  News sites with a GDPR acknowledgement button
 
 <p align="justify">
 
