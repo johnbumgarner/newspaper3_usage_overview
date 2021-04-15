@@ -2,7 +2,7 @@
 <p align="justify">
 The code examples in this repository were designed using <a href="https://github.com/codelucas/newspaper">Newspaper version: 0.2.8</a>. The examples might require modification when there is a version update for <i>Newspaper</i>.
            
-The last update to this repository was performed on <b>02-12-2021</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
+The last update to this repository was performed on <b>04-15-2021</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
 
 For instance, the Die Zeit news site added an advertisement and tracking acknowledgement button, which now requires the use of the <i>Python</i> library <i>selenium</i> coupled with <i>Newspaper</i> extraction code to extract article elements from this news source. 
 
@@ -879,6 +879,121 @@ if warnings_closed is True:
         chrome_browser_teardown(news_browser)
 
 ```
+
+##  News sites with GDPR acknowledgement buttons
+
+<p align="justify">
+
+This example is a continuation of the Die Zeit Extraction in German example, which was written in response to this <i>Newspaper</i> issue: <a href="https://github.com/codelucas/newspaper/issues/841">"Add support for zeit.de"</a>, which was posted on 09-08-2020.  A new comment posted on 04-15-2-21 indicated that GDPR acknowledgement warnings were preventing <i>Newspaper</i> from being able to extract from some German language news sites.  
+
+The code example below is using <i>Selenium</i>, <a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/">BeautifulSoup</a> and <i>Newspaper</i>.  Once the GDPR acknowledgement button has been clicked the primary URL is passed as <i>browser.page_source</i> to <i>BeautifulSoup</i> to harvest every article's href attribute for addtional processing with <i>Newspaper</i>.
+
+As of 04-15-2021 the code example below worked for the following German language news sites that have their GPDR warnings in an <i>iframe</i> with the title <i>Notice Message App</i>:
+
+- https://www.welt.de
+- https://www.bild.de
+- https://www.stern.de
+- https://www.faz.net/aktuell
+- https://www.sueddeutsche.de
+- https://www.tagesspiegel.de
+- https://www.handelsblatt.com
+- https://www.berliner-zeitung.de
+
+Sites that do not use an <i>iframe</i> are not supported the code below.
+
+Please note that I did not fully extract the article content from any of these news sites listed above, because I do not speak German and the structures vary. 
+This extraction code can be easily added with examples provided in this overview document. 
+</p>
+
+```python
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import NoSuchElementException
+
+from bs4 import BeautifulSoup
+
+from newspaper import Article
+from newspaper import Config
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
+
+
+def get_chrome_webdriver():
+    chrome_options = Options()
+    chrome_options.add_argument("--test-type")
+    chrome_options.add_argument('--ignore-certificate-errors')
+    chrome_options.add_argument('--disable-extensions')
+    chrome_options.add_argument('disable-infobars')
+    chrome_options.add_argument("--incognito")
+    # chrome_options.add_argument('--headless')
+
+    # window size as an argument is required in headless mode
+    chrome_options.add_argument('window-size=1920x1080')
+    driver = webdriver.Chrome('/usr/local/bin/chromedriver', options=chrome_options)
+    return driver
+
+
+def get_chrome_browser(url):
+    browser = get_chrome_webdriver()
+    browser.get(url)
+    return browser
+
+
+def chrome_browser_teardown(browser):
+    browser.close()
+    browser.quit()
+    return
+
+
+def bypass_gdpr_acknowledgement(browser):
+    if browser.find_elements_by_tag_name('iframe'):
+        iframes = browser.find_elements_by_tag_name('iframe')
+        number_of_iframes = len(iframes)
+        for i in range(number_of_iframes):
+            browser.switch_to.frame(i)
+            if browser.find_elements_by_tag_name("title"):
+                title_element = browser.find_element_by_tag_name("title").get_attribute("innerHTML")
+                if title_element == "Notice Message App":
+                    warning_labels = ['Akzeptieren', 'Alle akzeptieren', 'ZUSTIMMEN']
+                    for label in warning_labels:
+                        try:
+                            browser.find_element_by_xpath(f'//button[text()="{label}"]').click()
+                            browser.switch_to.default_content()
+                            browser.implicitly_wait(10)
+                            return True
+                        except NoSuchElementException:
+                            pass
+                else:
+                    browser.switch_to.default_content()
+            else:
+                browser.switch_to.default_content()
+    else:
+        return False
+
+
+def query_german_news_site(browser):
+    """
+    This function needs to be configured to harvest from the site that 
+    is being queried. Please reference the Al Arabiya Extraction in Arabic example
+    for guidance. 
+    """
+    soup = BeautifulSoup(browser.page_source, 'lxml')
+    for a in soup.find_all('a', href=True):
+        print(a['href'])
+    return True
+
+
+news_browser = get_chrome_browser('https://www.handelsblatt.com/')
+gdpr_status = bypass_gdpr_acknowledgement(news_browser)
+if gdpr_status is True:
+    finished = query_german_news_site(news_browser)
+    if finished is True:
+        chrome_browser_teardown(news_browser)
+```
+
 
 # Saving Extracted Data
 
