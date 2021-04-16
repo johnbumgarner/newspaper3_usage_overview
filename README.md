@@ -810,6 +810,11 @@ def get_chrome_webdriver():
 
     # window size as an argument is required in headless mode
     chrome_options.add_argument('window-size=1920x1080')
+    
+    # disable the banner "Chrome is being controlled by automated test software"
+    chrome_options.add_experimental_option("useAutomationExtension", False)
+    chrome_options.add_experimental_option("excludeSwitches", ['enable-automation'])
+    
     driver = webdriver.Chrome('/usr/local/bin/chromedriver', options=chrome_options)
     return driver
 
@@ -932,6 +937,11 @@ def get_chrome_webdriver():
 
     # window size as an argument is required in headless mode
     chrome_options.add_argument('window-size=1920x1080')
+    
+    # disable the banner "Chrome is being controlled by automated test software"
+    chrome_options.add_experimental_option("useAutomationExtension", False)
+    chrome_options.add_experimental_option("excludeSwitches", ['enable-automation'])
+    
     driver = webdriver.Chrome('/usr/local/bin/chromedriver', options=chrome_options)
     return driver
 
