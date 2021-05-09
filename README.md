@@ -511,7 +511,7 @@ config.browser_user_agent = USER_AGENT
 config.request_timeout = 10
 
 base_url = 'https://www.cnn.com/2020/10/12/health/johnson-coronavirus-vaccine-pause-bn/index.html'
-article = Article(url, config=config)
+article = Article(base_url, config=config)
 article.download()
 article.parse()
 with open('cnn.html', 'w') as fileout:
