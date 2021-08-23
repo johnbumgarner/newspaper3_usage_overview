@@ -1709,3 +1709,57 @@ The Guardian's article <i>The curse of 'white oil': electric vehicles' dirty sec
 The <i>sumy</i> summarization seems to be more accurate than <i>newspaper's<i> summarization for the same article.      
 <p>
 	
+	
+# Stack Overflow Questions
+<p align="justify">
+	
+Here are some of the Stack Overflow questions that I have answered on using <i>Newspaper</i> that might be useful to others.   My Stack Oveflow handle is [Life is complex](https://stackoverflow.com/users/6083423/life-is-complex). 
+	
+
+1. [Python Newspaper with web archive wayback machine](https://stackoverflow.com/questions/41680013/python-newspaper-with-web-archive-wayback-machine/65476836#65476836)
+	
+2. [Python Newspapers3k Newspapers library mutithreading hangs indefinitely](https://stackoverflow.com/questions/63648294/python-newspapers3k-newspapers-library-mutithreading-hangs-indefinitely/64328640#64328640)
+	
+3. [Python newspaper module - get all the images from an article](https://stackoverflow.com/questions/50707496/python-newspaper-module-get-all-the-images-from-an-article/64020494#64020494)
+	
+4. [Web Scraping with Python and newspaper3k lib does not return data](https://stackoverflow.com/questions/65110807/web-scraping-with-python-and-newspaper3k-lib-does-not-return-data/65118690#65118690)
+	
+5. [How to get around Newspaper throwing 503 exceptions for certain webpages](https://stackoverflow.com/questions/68311665/how-to-get-around-newspaper-throwing-503-exceptions-for-certain-webpages/68318427#68318427)
+	
+6. [How to extract from stored HTML using Python Newspaper](https://stackoverflow.com/questions/43281123/how-to-extract-from-stored-html-using-python-newspaper)
+	
+7. [Extract image using Newspaper from HTML](https://stackoverflow.com/questions/63842558/extract-image-using-newspaper-from-html/63969835#63969835)
+	
+8. [Publishing date in newspaper library always returning None](https://stackoverflow.com/questions/33068841/publishing-date-in-newspaper-library-always-returning-none/66294565#66294565)
+	
+9. [Newspaper api for scraping articles](https://stackoverflow.com/questions/63609977/newspaper-api-for-scraping-articles/63974725#63974725)
+	
+10. [Get more article URLs from a news source with newspaper3k?](https://stackoverflow.com/questions/64095039/get-more-article-urls-from-a-news-source-with-newspaper3k/64178502#64178502)
+	
+11. [How to use Newspaper3k library without downloading articles?](https://stackoverflow.com/questions/56677636/how-to-use-newspaper3k-library-without-downloading-articles/64327821#64327821)
+
+12. [Python: See timestamp of article provided by newspaper3k?](https://stackoverflow.com/questions/63948084/python-see-timestamp-of-article-provided-by-newspaper3k/64002544#64002544)
+	
+13. [Newspaper3k scrape several websites](https://stackoverflow.com/questions/64250654/newspaper3k-scrape-several-websites/64336353#64336353)
+	
+14. [Why isn't my Newspaper3k code working with Newsweek?](https://stackoverflow.com/questions/56614991/why-isnt-my-newspaper3k-code-working-with-newsweek/64128152#64128152)
+	
+15. [Web scraping with Newspaper3k, got only 50 articles](https://stackoverflow.com/questions/63782791/web-scraping-with-newspaper3k-got-only-50-articles/63973076#63973076)
+
+16. [Newspaper3k scrape several websites](https://stackoverflow.com/questions/64250654/newspaper3k-scrape-several-websites/64336353#64336353)
+	
+17. [Can't seem to access Metatags](https://stackoverflow.com/questions/63538774/cant-seem-to-access-metatags/64297209#64297209)
+	
+18. [newsletter3k, author function did not pick up author in news article](https://stackoverflow.com/questions/66122449/newsletter3k-am-i-did-something-wrong-author-function-did-not-pick-up-author-i/66139240#66139240)
+
+19. [newsletter3k, find author name in visible text after first “by” word
+](https://stackoverflow.com/questions/66167019/newsletter3k-find-author-name-in-visible-text-after-first-by-word/66189920#66189920)
+
+20. [Newspaper3k API Article download() failed with HTTPSConnectionPool port=443 Read timed out. (read timeout=7) on URL](https://stackoverflow.com/questions/63061172/newspaper3k-api-article-download-failed-with-httpsconnectionpool-port-443-read/64213886#64213886)
+	
+21. [newsletter3k_does its funtions work on stored data,I already downloaded contents of the URL](https://stackoverflow.com/questions/66112980/newsletter3k-does-its-funtions-work-on-stored-data-i-already-downloaded-contents/66127010#66127010)
+
+22. [Get web article information (content , title, …) from multiple web pages-python code](https://stackoverflow.com/questions/65659787/get-web-article-information-content-title-from-multiple-web-pages-pytho/65891486#65891486)
+
+<p>
+	
