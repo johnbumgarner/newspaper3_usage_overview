@@ -1,8 +1,10 @@
 # Special caveats
 <p align="justify">
-The code examples in this repository were designed using <a href="https://github.com/codelucas/newspaper">Newspaper version: 0.2.8</a>. The examples might require modification when there is a version update for <i>Newspaper</i>.
+The code examples in this repository were designed using <a href="https://github.com/codelucas/newspaper">Newspaper3k version: 0.2.8</a>.  The code of <i>Newspaper3k</i> was last updated in September 2018. 
+
+The examples below might require modification when there is a version update for <i>Newspaper</i>.  There has been a recenty fork of <i>Newspaper3k</i>, which is called  <a href="https://github.com/AndyTheFactory/newspaper4k">Newspaper4k</a>.
            
-The last update to this repository was performed on <b>04-15-2021</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
+The last update to this repository was performed on <b>12-31-2023</b>. All the examples worked based on the website structure of the news sources being queried at that time.  If any news source modifies their website's navigational structure then the code example for that source might not function correctly.
 
 For instance, the Die Zeit news site added an advertisement and tracking acknowledgement button, which now requires the use of the <i>Python</i> library <i>selenium</i> coupled with <i>Newspaper</i> extraction code to extract article elements from this news source. 
 
